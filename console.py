@@ -1,11 +1,13 @@
 import pygame
-import ctypes
 import defs
 
 class Console:
     def __init__(self):
-        user32 = ctypes.windll.user32
-        screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        
+        # Lấy thông tin màn hình
+        display_info = pygame.display.Info()
+        #screen_width = display_info.current_w
+        screen_height = display_info.current_h
         screen_height = screen_height - defs.HEADER_BAR
 
         self.screen_size = screen_height
