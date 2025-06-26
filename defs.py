@@ -25,8 +25,14 @@ SQUARE_SIZE_DEFAULT = 77
 
 MOVE_SPEED = 5
 
-CAR_1 = "GUI/car_1.png"
+CAR_1 = "Asset/Car/car_1.png"
 
-MAIN_CAR_PATH = "GUI/car_target.png"
+MAIN_CAR_PATH = "Asset/Car/car_target.png"
 
-MAP_PATH = "GUI/bg_game.jpg"
+MAP_PATH = "Asset/Background/bg_game.jpg"
+
+WHITE = (255, 255, 255)
+BLUE_LIGHT = (74, 158, 255)
+BACKGROUND = (240, 240, 240)
+
+FONT = "Asset/Font/FredokaOne-Regular.ttf"
