@@ -1,3 +1,5 @@
+import os
+
 # Coordinate of board
 MATRIX = [[(278, 278), (355, 278), (432, 278), (509, 278), (586, 278), (663, 278)],
           [(278, 355), (355, 355), (432, 355), (509, 355), (586, 355), (663, 355)],
@@ -25,14 +27,20 @@ SQUARE_SIZE_DEFAULT = 77
 
 MOVE_SPEED = 5
 
-CAR_1 = "Asset/Car/car_1.png"
+SRC_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
+ASSET_PATH = SRC_PATH + "../Asset/"
+BUTTON_PATH = ASSET_PATH + "Button/"
+CAR_PATH = ASSET_PATH + "Car/"
+DISPLAY_PATH = ASSET_PATH + "Display/"
+FONT_PATH = ASSET_PATH + "Font/"
 
-MAIN_CAR_PATH = "Asset/Car/car_target.png"
+CAR_1 = CAR_PATH + "car_1.png"
+MAIN_CAR_PATH = CAR_PATH + "car_target.png"
 
-MAP_PATH = "Asset/Background/bg_game.jpg"
+MAP_PATH = ASSET_PATH + "Background/bg_game.jpg"
 
 WHITE = (255, 255, 255)
 BLUE_LIGHT = (74, 158, 255)
 BACKGROUND = (240, 240, 240)
 
-FONT = "Asset/Font/FredokaOne-Regular.ttf"
+FONT = ASSET_PATH + "Font/FredokaOne-Regular.ttf"
