@@ -25,6 +25,8 @@ SQUARE_SIZE_DEFAULT = 77
 
 MOVE_SPEED = 5
 
+CAR_1 = "GUI/car_1.png"
+
 MAIN_CAR_PATH = "GUI/car_target.png"
 
 MAP_PATH = "GUI/bg_game.jpg"
