@@ -18,14 +18,16 @@ VALID_MATRIX = [[0, 0, 0, 0, 0, 0],
 END_COORDINATE = (664, 432)
 
 MAP_SIZE = (1920, 1920)
-
 HEIGHT_DEFAULT = 1020
-
 HEADER_BAR = 60
-
 SQUARE_SIZE_DEFAULT = 77
 
-MOVE_SPEED = 5
+WHITE = (255, 255, 255)
+BLUE_LIGHT = (74, 158, 255)
+BACKGROUND = (240, 240, 240)
+
+MOVE_SPEED = 3
+STEP_DELAY = 500
 
 SRC_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 ASSET_PATH = SRC_PATH + "../Asset/"
@@ -34,13 +36,8 @@ CAR_PATH = ASSET_PATH + "Car/"
 DISPLAY_PATH = ASSET_PATH + "Display/"
 FONT_PATH = ASSET_PATH + "Font/"
 
-CAR_1 = CAR_PATH + "car_1.png"
 MAIN_CAR_PATH = CAR_PATH + "car_target.png"
 
 MAP_PATH = ASSET_PATH + "Background/bg_game.jpg"
-
-WHITE = (255, 255, 255)
-BLUE_LIGHT = (74, 158, 255)
-BACKGROUND = (240, 240, 240)
 
 FONT = ASSET_PATH + "Font/FredokaOne-Regular.ttf"

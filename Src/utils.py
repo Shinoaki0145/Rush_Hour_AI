@@ -40,8 +40,8 @@ class GameUtils:
         """Reset game về trạng thái ban đầu"""
         # Tạo lại main_car
         main_car = car.MainCar(0, 2, self.console.reSize_Image(MAIN_CAR_PATH))
-        car_1 = car.Car("car_1", 4, 0, self.console.reSize_Image(CAR_1), False, "down")
-        
+        car_1 = car.Car("car_1", 4, 0, self.console.reSize_Image(CAR_PATH + "car_1.png"), False, "down")
+
         # Tạo lại manage_car
         manage_car = ManageCar()
         manage_car.add_car(main_car)

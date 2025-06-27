@@ -11,9 +11,9 @@ class DisplayManager:
     def load_display_images(self):
         """Load các hình ảnh display"""
         self.display_images = {
-            "algorithm": self.console.reSize_Image("Asset/Display/algo_display.png"),
-            "moves": self.console.reSize_Image("Asset/Display/moves_display.png"),  
-            "level": self.console.reSize_Image("Asset/Display/level_display.png")
+            "algorithm": self.console.reSize_Image(DISPLAY_PATH + "algo_display.png"),
+            "level": self.console.reSize_Image(DISPLAY_PATH + "level_display.png"),
+            "moves": self.console.reSize_Image(DISPLAY_PATH + "moves_display.png"),
         }
     
     def setup_display_positions(self):
@@ -35,7 +35,7 @@ class DisplayManager:
                 "image": self.display_images["moves"],
                 "pos": (self.console.screen_size - 300, 175),
                 "text_pos": (self.console.screen_size - 286, 179),
-                "text": "MOVES :  10"
+                "text": "MOVES :  0"
             }
         }
     
@@ -59,8 +59,10 @@ class DisplayManager:
     
     def update_display_text(self, display_name, text):
         """Cập nhật text của display"""
-        if display_name in self.displays:
-            self.displays[display_name]["text"] = text
+            # Chuyển display_name thành lowercase để match với keys trong displays dict
+        display_key = display_name.lower()
+        if display_key in self.displays:
+            self.displays[display_key]["text"] = text
     
     def add_custom_display(self, name, image_type, pos, text_pos, text=""):
         """Thêm display tùy chỉnh"""
@@ -83,12 +85,12 @@ class ButtonManager:
     def load_button_images(self):
         """Load tất cả button images"""
         self.button_images = {
-            "info": self.console.reSize_Image("Asset/Button/but_info.png"),
-            "mute": self.console.reSize_Image("Asset/Button/but_audio.png"),
-            "pause": self.console.reSize_Image("Asset/Button/but_pause.png"),
-            "reset": self.console.reSize_Image("Asset/Button/but_reset.png"),
-            "play": self.console.reSize_Image("Asset/Button/but_play.png"),
-            "exit": self.console.reSize_Image("Asset/Button/but_exit.png")
+            "info": self.console.reSize_Image(BUTTON_PATH + "but_info.png"),
+            "mute": self.console.reSize_Image(BUTTON_PATH + "but_audio.png"),
+            "pause": self.console.reSize_Image(BUTTON_PATH + "but_pause.png"),
+            "reset": self.console.reSize_Image(BUTTON_PATH + "but_reset.png"),
+            "play": self.console.reSize_Image(BUTTON_PATH + "but_play.png"),
+            "exit": self.console.reSize_Image(BUTTON_PATH + "but_exit.png")
         }
     
     def setup_button_positions(self):
@@ -149,4 +151,3 @@ def create_3d_text(screen, text, size, x, y,):
     # Vẽ chữ chính
     main_surface = font.render(text, True, WHITE)
     screen.blit(main_surface, (x, y))
-    
