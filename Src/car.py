@@ -1,6 +1,14 @@
 import pygame
 import defs
 
+class SimpleCar:
+    def __init__(self, name, length, coord, vertical):
+        self.name = name
+        self.length = length
+        self.coord = coord  # (y, x)
+        self.vertical = vertical
+        self.axis = 0 if self.vertical else 1  # 0 là trục y (dọc), 1 là trục x (ngang)
+        
 class Car:
     def __init__(self, name, x, y, image, is_horizontal, direc):
         self.name = name
@@ -74,7 +82,8 @@ class Car:
             self.offset_y -= defs.MOVE_SPEED
             if self.offset_y < y_coor:
                 self.offset_y = y_coor
-
+        return self.offset_x != x_coor or self.offset_y != y_coor
+    
     def draw(self, surface):
         surface.blit(self.image, (self.offset_x, self.offset_y))
 

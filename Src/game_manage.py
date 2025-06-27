@@ -18,11 +18,11 @@
 
 
 # main_car = car.MainCar(0, 2, console.reSize_Image(MAIN_CAR_PATH))
-# car_1 = car.Car("car_1", 4, 0, console.reSize_Image(CAR_1), False, "down")
+# truck_0 = car.Car("truck_0", 4, 0, console.reSize_Image(truck_0), False, "down")
 
 # manage_car = ManageCar()   
 # manage_car.add_car(main_car)
-# manage_car.add_car(car_1)
+# manage_car.add_car(truck_0)
 
 # # Load button images
 # button_info = console.reSize_Image("Asset/Button/but_info.png")
@@ -55,11 +55,11 @@
 #                  button_positions["reset"][1] <= mouse_pos[1] <= button_positions["reset"][1] + button_reset.get_height()):
 #                 # Reset the game state
 #                 main_car = car.MainCar(0, 2, console.reSize_Image(MAIN_CAR_PATH))
-#                 car_1 = car.Car("car_1", 4, 0, console.reSize_Image(CAR_1), False, "down")
+#                 truck_0 = car.Car("truck_0", 4, 0, console.reSize_Image(truck_0), False, "down")
 
 #                 manage_car = ManageCar()   
 #                 manage_car.add_car(main_car)
-#                 manage_car.add_car(car_1)
+#                 manage_car.add_car(truck_0)
                 
 #             # Check close button
 #             elif (button_positions["exit"][0] <= mouse_pos[0] <= button_positions["exit"][0] + button_exit.get_width() and
@@ -109,11 +109,12 @@
 import pygame
 import console
 import car
-from map import *
+from board import *
 from defs import *
 from manage_car import *
 from ui import ButtonManager, create_3d_text
 from utils import GameUtils
+from Algo import *
 
 pygame.init()
 console = console.Console()
@@ -127,11 +128,11 @@ board = Board(console.reSize_Image(MAP_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
 # Initialize game objects
 main_car = car.MainCar(0, 2, console.reSize_Image(MAIN_CAR_PATH))
-car_1 = car.Car("car_1", 4, 0, console.reSize_Image(CAR_1), False, "down")
+truck_0 = car.Car("truck_0", 3, 0, console.reSize_Image(CAR_PATH + "truck_0.png"), False, "down")
 
 manage_car = ManageCar()   
 manage_car.add_car(main_car)
-manage_car.add_car(car_1)
+manage_car.add_car(truck_0)
 
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
@@ -140,31 +141,46 @@ game_utils = GameUtils(console)
 # Game objects dictionary for easy management
 game_objects = {
     "main_car": main_car,
-    "car_1": car_1,
+    "truck_0": truck_0,
     "manage_car": manage_car,
     "board": board
 }
 
+searched = False
 while running:  
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             running = False
             exit()  
-        elif event.type == pygame.KEYDOWN:
-            game_objects = game_utils.handle_keyboard_input(event.key, game_objects)
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos
-            clicked_button = game_utils.check_button_click(mouse_pos, button_manager)
-            if clicked_button:
-                if clicked_button == "exit":
-                    running = False
-                    game_utils.handle_button_action(clicked_button, game_objects)
-                else:
-                    game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+        # elif event.type == pygame.KEYDOWN:
+        #     game_objects = game_utils.handle_keyboard_input(event.key, game_objects)
+        # elif event.type == pygame.MOUSEBUTTONDOWN:
+        #     mouse_pos = event.pos
+        #     clicked_button = game_utils.check_button_click(mouse_pos, button_manager)
+        #     if clicked_button:
+        #         if clicked_button == "exit":
+        #             running = False
+        #             game_utils.handle_button_action(clicked_button, game_objects)
+        #         else:
+        #             game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+    # Run search
+    if not searched:
+        cars = []
+        for car in game_objects["manage_car"].cars.values():
+            cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
+        start = State(cars)
+        path = ids(start)
+        i = 0
+        searched = True
 
     # Draw game elements
     screen.blit(game_objects["board"].image, (game_objects["board"].offset_x, game_objects["board"].offset_y))
-    game_objects["manage_car"].update_car()
+    
+    if not game_objects["manage_car"].update_car():
+        if i < len(path):
+            for car in path[i].cars:
+                game_objects["manage_car"].cars[car.name].y, game_objects["manage_car"].cars[car.name].x = car.coord
+        i += 1
     game_objects["manage_car"].draw_all(screen)
     
     # Draw UI elements

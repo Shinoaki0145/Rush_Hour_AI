@@ -56,8 +56,11 @@ class ManageCar:
             print("Cannot move !!!")
 
     def update_car(self):
+        updated = False
         for car in self.cars.values():
-            car.update()
+            if car.update():
+                updated = True
+        return updated
 
     def draw_all(self, surface):
         for car in self.cars.values():
