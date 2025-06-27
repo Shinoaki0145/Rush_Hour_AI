@@ -108,13 +108,14 @@
 
 import pygame
 import console
-import car
+from car import *
 from board import *
 from defs import *
 from manage_car import *
 from ui import ButtonManager, create_3d_text
 from utils import GameUtils
 from Algo import *
+from random import choice
 
 pygame.init()
 console = console.Console()
@@ -127,24 +128,41 @@ running = True
 board = Board(console.reSize_Image(MAP_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
 # Initialize game objects
-main_car = car.MainCar(0, 2, console.reSize_Image(MAIN_CAR_PATH))
-truck_0 = car.Car("truck_0", 3, 0, console.reSize_Image(CAR_PATH + "truck_0.png"), False, "down")
-
 manage_car = ManageCar()   
-manage_car.add_car(main_car)
-manage_car.add_car(truck_0)
+with open(ASSET_PATH + "Map/map12.txt") as f:
+    main_car_x, main_car_y = list(map(int, f.readline().strip().split(',')))
+    main_car = car.MainCar(main_car_x, main_car_y, console.reSize_Image(MAIN_CAR_PATH))
+    manage_car.add_car(main_car)
 
+    car_count = 0
+    for line in f.readlines():
+        type, x, y, horizontal, direction = line.strip().split(',')
+        if type == 'car':
+            car_id = str(choice(range(0, 5)))
+        else:
+            car_id = str(choice(range(0, 3)))
+        manage_car.add_car(Car(
+            type + str(car_count),
+            int(x),
+            int(y),
+            console.reSize_Image(CAR_PATH + type + "_" + car_id + ".png"),
+            int(horizontal),
+            direction
+        ))
+        car_count += 1
+# manage_car.add_car(Car("car0",5,1,console.reSize_Image(CAR_PATH + 'car_0.png'), False, "down"))
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
 game_utils = GameUtils(console)
 
 # Game objects dictionary for easy management
 game_objects = {
-    "main_car": main_car,
-    "truck_0": truck_0,
     "manage_car": manage_car,
     "board": board
 }
+
+for car_name in manage_car.cars:
+    game_objects[car_name] = manage_car.cars[car_name]
 
 searched = False
 while running:  
@@ -169,7 +187,8 @@ while running:
         for car in game_objects["manage_car"].cars.values():
             cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
         start = State(cars)
-        path = ids(start)
+        # path = ids(start)
+        path = a_star(start)
         i = 0
         searched = True
 
