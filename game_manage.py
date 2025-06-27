@@ -112,7 +112,7 @@ import car
 from map import *
 from defs import *
 from manage_car import *
-from ui import ButtonManager, create_3d_text
+from ui import ButtonManager, DisplayManager, create_3d_text
 from utils import GameUtils
 
 pygame.init()
@@ -135,6 +135,7 @@ manage_car.add_car(car_1)
 
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
+display_manager = DisplayManager(console)
 game_utils = GameUtils(console)
 
 # Game objects dictionary for easy management
@@ -145,6 +146,10 @@ game_objects = {
     "board": board
 }
 
+# Game state variables
+moves_count = 0
+start_time = pygame.time.get_ticks()
+
 while running:  
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -152,6 +157,7 @@ while running:
             exit()  
         elif event.type == pygame.KEYDOWN:
             game_objects = game_utils.handle_keyboard_input(event.key, game_objects)
+            moves_count += 1  # Increment moves when player moves
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos
             clicked_button = game_utils.check_button_click(mouse_pos, button_manager)
@@ -159,8 +165,21 @@ while running:
                 if clicked_button == "exit":
                     running = False
                     game_utils.handle_button_action(clicked_button, game_objects)
+                elif clicked_button == "reset":
+                    game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+                    moves_count = 0  # Reset moves count
+                    start_time = pygame.time.get_ticks()  # Reset timer
                 else:
                     game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+
+    # Update displays
+    elapsed_time = (pygame.time.get_ticks() - start_time) // 1000
+    minutes = elapsed_time // 60
+    seconds = elapsed_time % 60
+    
+    display_manager.update_display_text("ALGORITHM", "ALGORITHM: BFS")
+    display_manager.update_display_text("lLEVEL", "LEVEL: 1")
+    display_manager.update_display_text("INFO", f"MOVES: {moves_count} | Time: {minutes:02d}:{seconds:02d}")
 
     # Draw game elements
     screen.blit(game_objects["board"].image, (game_objects["board"].offset_x, game_objects["board"].offset_y))
@@ -169,7 +188,8 @@ while running:
     
     # Draw UI elements
     button_manager.draw_all_buttons(screen)
-    create_3d_text(screen, "RUSH HOUR", 180, console.screen_size - 100)
+    display_manager.draw_all_displays(screen)
+    create_3d_text(screen, "RUSH HOUR", 80, 180, console.screen_size - 96)
 
     pygame.display.flip()
     clock.tick(60)

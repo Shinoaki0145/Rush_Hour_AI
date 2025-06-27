@@ -26,6 +26,8 @@ class GameUtils:
             return self.reset_game(game_objects)
         elif button_name == "exit":
             return self.exit_game()
+        elif button_name == "play":
+            return self.pause_game(game_objects)  # Giả sử play cũng dừng game
         elif button_name == "stop":
             return self.pause_game(game_objects)
         elif button_name == "mute":
@@ -58,6 +60,12 @@ class GameUtils:
         """Thoát game"""
         pygame.quit()
         exit()
+        
+    def play_game(self, game_objects):
+        """Bắt đầu hoặc tiếp tục game"""
+        if "manage_car" in game_objects:
+            game_objects["manage_car"].start_all_cars()
+        return game_objects
     
     def pause_game(self, game_objects):
         """Dừng tất cả cars"""
