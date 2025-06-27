@@ -1,0 +1,6 @@
+0,2
+car,2,1,0,down
+car,2,4,1,right
+car,4,4,1,right
+truck,2,0,1,right
+truck,5,0,0,down
