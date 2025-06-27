@@ -20,7 +20,6 @@ def load_map(map_name):
 
         car_count = 0
         for line in f.readlines():
-            print("line read!")
             type, x, y, horizontal, direction = line.strip().split(',')
             if type == 'car':
                 car_id = str(choice(range(0, 5)))
@@ -72,17 +71,16 @@ while running:
             running = False
             exit()  
         # elif event.type == pygame.KEYDOWN:
-        #     game_objects = game_utils.handle_keyboard_input(event.key, game_objects)
+        #     manage_car = game_utils.handle_keyboard_input(event.key, manage_car)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos
             clicked_button = game_utils.check_button_click(mouse_pos, button_manager)
             if clicked_button:
                 if clicked_button == "exit":
                     running = False
-                    # game_utils.handle_button_action(clicked_button, game_objects)
-                    game_utils.exit_game()
+                    game_utils.handle_button_action(clicked_button, manage_car)
                 elif clicked_button == "reset":
-                    manage_car = load_map(map_name)
+                    manage_car = game_utils.handle_button_action(clicked_button, load_map(map_name))
                     # Reset algorithm variables
                     searched = False
                     path = []
@@ -92,8 +90,8 @@ while running:
                     waiting_for_next_step = False
                     moves_count = 0  # Reset moves count
                     start_time = pygame.time.get_ticks()  # Reset timer
-                # else:
-                #     game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+                else:
+                    manage_car = game_utils.handle_button_action(clicked_button, manage_car)
 
     # Run search
     if not searched:

@@ -17,61 +17,39 @@ class GameUtils:
                 return button_name
         return None
     
-    def handle_button_action(self, button_name, game_objects):
-        """
-        Xử lý action của button dựa trên tên button
-        game_objects: dict chứa các object cần thiết của game
-        """
+    def handle_button_action(self, button_name, manage_car):
         if button_name == "reset":
-            return self.reset_game(game_objects)
+            return self.reset_game(manage_car)
         elif button_name == "exit":
             return self.exit_game()
         elif button_name == "play":
-            return self.pause_game(game_objects)  # Giả sử play cũng dừng game
+            return self.pause_game(manage_car)  # Giả sử play cũng dừng game
         elif button_name == "stop":
-            return self.pause_game(game_objects)
+            return self.pause_game(manage_car)
         elif button_name == "mute":
             return self.toggle_mute()
         elif button_name == "info":
             return self.show_info()
-        return game_objects  # Trả về game_objects không thay đổi nếu không có action
+        return manage_car  # Trả về manage_car không thay đổi nếu không có action
     
-    def reset_game(self, game_objects):
-        """Reset game về trạng thái ban đầu"""
-        # Tạo lại main_car
-        main_car = car.MainCar(0, 2, self.console.reSize_Image(MAIN_CAR_PATH))
-        car_1 = car.Car("car_1", 4, 0, self.console.reSize_Image(CAR_PATH + "car_1.png"), False, "down")
-
-        # Tạo lại manage_car
-        manage_car = ManageCar()
-        manage_car.add_car(main_car)
-        manage_car.add_car(car_1)
+    def reset_game(self, manage_car):
         
-        # Cập nhật game_objects
-        game_objects.update({
-            "main_car": main_car,
-            "car_1": car_1,
-            "manage_car": manage_car
-        })
-        
-        return game_objects
+        return manage_car
     
     def exit_game(self):
         """Thoát game"""
         pygame.quit()
         exit()
         
-    def play_game(self, game_objects):
+    def play_game(self, manage_car):
         """Bắt đầu hoặc tiếp tục game"""
-        if "manage_car" in game_objects:
-            game_objects["manage_car"].start_all_cars()
-        return game_objects
+        manage_car.start_all_cars()
+        return manage_car
     
-    def pause_game(self, game_objects):
+    def pause_game(self, manage_car):
         """Dừng tất cả cars"""
-        if "manage_car" in game_objects:
-            game_objects["manage_car"].pause_all_cars()
-        return game_objects
+        manage_car.pause_all_cars()
+        return manage_car
     
     def toggle_mute(self):
         """Bật/tắt âm thanh"""
@@ -83,13 +61,12 @@ class GameUtils:
         self.console.show_info()
         return True
     
-    def handle_keyboard_input(self, key, game_objects):
+    def handle_keyboard_input(self, key, manage_car):
         """
         Xử lý input từ bàn phím
         """
-        if "manage_car" in game_objects:
-            if key == pygame.K_RIGHT:
-                game_objects["manage_car"].move_car("main_car", "right")
-            elif key == pygame.K_LEFT:
-                game_objects["manage_car"].move_car("main_car", "left")
-        return game_objects
+        if key == pygame.K_RIGHT:
+            manage_car.move_car("main_car", "right")
+        elif key == pygame.K_LEFT:
+            manage_car.move_car("main_car", "left")
+        return manage_car
