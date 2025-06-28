@@ -1,12 +1,41 @@
 import pygame
 import console
-import car
+from car import *
 from board import *
 from defs import *
 from manage_car import *
 from ui import *
-from utils import GameUtils
+from utils import *
 from Algo import *
+from random import choice
+
+def load_map(map_name):
+    clear_valid_matrix()
+    new_manage_car = ManageCar()
+    map_path = ASSET_PATH + "Map/" + map_name + ".txt"
+    with open(map_path) as f:
+        target_car_x, target_car_y = list(map(int, f.readline().strip().split(',')))
+        target_car = MainCar(target_car_x, target_car_y, console.reSize_Image(TARGET_CAR_PATH))
+        new_manage_car.add_car(target_car)
+
+        car_count = 0
+        for line in f.readlines():
+            type, x, y, horizontal, direction = line.strip().split(',')
+            if type == 'car':
+                car_id = str(choice(range(0, 5)))
+            else:
+                car_id = str(choice(range(0, 3)))
+            new_manage_car.add_car(Car(
+                type + str(car_count),
+                int(x),
+                int(y),
+                console.reSize_Image(CAR_PATH + type + "_" + car_id + ".png"),
+                int(horizontal),
+                direction
+            ))
+            car_count += 1
+    return new_manage_car
+
 
 pygame.init()
 console = console.Console()
@@ -16,31 +45,17 @@ screen = pygame.display.set_mode((console.screen_size, console.screen_size))
 clock = pygame.time.Clock()
 pygame.display.set_caption('Rush Hour') 
 running = True  
-board = Board(console.reSize_Image(MAP_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
+board = Board(console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
 # Initialize game objects
-main_car = car.MainCar(0, 2, console.reSize_Image(MAIN_CAR_PATH))
-truck_0 = car.Car("truck_0", 4, 0, console.reSize_Image(CAR_PATH + "truck_0.png"), False, "down")
-car_1 = car.Car("car_1", 4, 4, console.reSize_Image(CAR_PATH + "car_1.png"), True, "right")
-car_2 = car.Car("car_2", 3, 3, console.reSize_Image(CAR_PATH + "car_2.png"), False, "down")
-
-manage_car = ManageCar()   
-manage_car.add_car(main_car)
-manage_car.add_car(truck_0)
-manage_car.add_car(car_1)
-manage_car.add_car(car_2)
+map_name = "map12"
+manage_car = load_map(map_name)
 
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
 display_manager = DisplayManager(console)
 game_popup = GamePopup(console)
 game_utils = GameUtils(console)
-
-# Game objects dictionary for easy management
-game_objects = {
-    "manage_car": manage_car,
-    "board": board
-}
 
 searched = False
 path = []
@@ -69,7 +84,7 @@ while running:
                         print(f"Algorithm selected: {clicked_popup_button}")
                         
                         # SET ALGORITHM TRƯỚC
-                        game_objects = game_utils.handle_algorithm_selection(clicked_popup_button, game_objects)
+                        game_utils.handle_algorithm_selection(clicked_popup_button)
                         
                         # UPDATE DISPLAY SAU
                         algorithm_display_text = f"ALGORITHM :  {clicked_popup_button}"
@@ -94,7 +109,7 @@ while running:
                         
                     elif game_popup.popup_type == "win":
                         # Xử lý win popup
-                        game_objects = game_utils.handle_win_popup_action(clicked_popup_button, game_objects, game_popup)
+                        mange_car = game_utils.handle_win_popup_action(clicked_popup_button, load_map(map_name), game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
                         
@@ -114,9 +129,9 @@ while running:
             if clicked_button:
                 if clicked_button == "exit":
                     running = False
-                    game_utils.handle_button_action(clicked_button, game_objects)
+                    game_utils.handle_button_action(clicked_button, manage_car)
                 elif clicked_button == "reset":
-                    game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+                    manage_car = game_utils.handle_button_action(clicked_button, load_map(map_name))
                     # Reset algorithm variables
                     searched = False
                     path = []
@@ -130,14 +145,14 @@ while running:
                     display_manager.update_display_text("moves", "MOVES :  0")
                 elif clicked_button == "play":
                     # Hiển thị popup algorithm selection
-                    game_objects = game_utils.handle_button_action(clicked_button, game_objects, game_popup)
+                    game_utils.handle_button_action(clicked_button, game_popup)
                 else:
-                    game_objects = game_utils.handle_button_action(clicked_button, game_objects)
+                    manage_car = game_utils.handle_button_action(clicked_button, manage_car)
 
     # Run search - chỉ chạy khi không có popup hiển thị
     if not searched and not game_popup.visible and not algorithm_execution_completed:
         cars = []
-        for car in game_objects["manage_car"].cars.values():
+        for car in manage_car.cars.values():
             cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
         start = State(cars)
         
@@ -156,19 +171,19 @@ while running:
             path = ids(start)
         else:
             path = ids(start)
-
+            
         current_step = 0
         step_timer = current_time
         searched = True
         print(f"Found path with {len(path)} steps using {selected_algo}")
 
     # Draw game elements
-    screen.blit(game_objects["board"].image, (game_objects["board"].offset_x, game_objects["board"].offset_y))
+    screen.blit(board.image, (board.offset_x, board.offset_y))
     
     # Algorithm execution with step timing - chỉ chạy khi không có popup
     if searched and path and not game_popup.visible and not algorithm_execution_completed:
         # Kiểm tra xem có xe nào đang di chuyển không
-        cars_moving = game_objects["manage_car"].update_car()
+        cars_moving = manage_car.update_car()
         
         if not cars_moving:  # Không có xe nào đang di chuyển
             if waiting_for_next_step:
@@ -181,8 +196,8 @@ while running:
                 if current_step < len(path):
                     # Cập nhật vị trí xe theo step hiện tại
                     for car in path[current_step].cars:
-                        if car.name in game_objects["manage_car"].cars:
-                            game_objects["manage_car"].cars[car.name].y, game_objects["manage_car"].cars[car.name].x = car.coord
+                        if car.name in manage_car.cars:
+                            manage_car.cars[car.name].y, manage_car.cars[car.name].x = car.coord
                     
                     moves_count += 1  # Tăng số bước di chuyển
                     # Cập nhật hiển thị số bước di chuyển
@@ -199,16 +214,16 @@ while running:
                     algorithm_execution_completed = True
                     
                     # Kiểm tra win condition
-                    if game_utils.check_win_condition(game_objects):
+                    if game_utils.check_win_condition(manage_car):
                         # Hiển thị win popup với algorithm được sử dụng
                         current_algorithm = game_utils.get_selected_algorithm()
                         game_popup.show_win_message(game_utils.get_current_level(), moves_count, current_algorithm)
                         game_utils.set_game_completed(True)
     else:
         # Update cars khi không có algorithm execution
-        game_objects["manage_car"].update_car()
+        manage_car.update_car()
 
-    game_objects["manage_car"].draw_all(screen)
+    manage_car.draw_all(screen)
     
     # Draw UI elements
     button_manager.draw_all_buttons(screen)

@@ -90,7 +90,7 @@ class Car:
 
 class MainCar(Car):
     def __init__(self, x, y, image):
-        super().__init__("main_car", x, y, image, is_horizontal = True, direc = "right")
+        super().__init__("target_car", x, y, image, is_horizontal = True, direc = "right")
 
     def is_at_exit(self):
         return self.x + self.length_grid - 1 == 5

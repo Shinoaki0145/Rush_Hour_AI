@@ -29,10 +29,10 @@ def a_star(start):
                 dist[state_tuple] = new_cost
                 frontier.put((new_cost, next(unique), state))
 
-    if not result:
-        return [start]
-    
     path = []
+    if not result:
+        return path
+    
     while result != start:
         path.append(result)
         result = result.parent

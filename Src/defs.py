@@ -36,8 +36,13 @@ CAR_PATH = ASSET_PATH + "Car/"
 DISPLAY_PATH = ASSET_PATH + "Display/"
 FONT_PATH = ASSET_PATH + "Font/"
 
-MAIN_CAR_PATH = CAR_PATH + "car_target.png"
+TARGET_CAR_PATH = CAR_PATH + "car_target.png"
 
-MAP_PATH = ASSET_PATH + "Background/bg_game.jpg"
+BACKGROUND_PATH = ASSET_PATH + "Background/bg_game.jpg"
 
 FONT = ASSET_PATH + "Font/FredokaOne-Regular.ttf"
+
+def clear_valid_matrix():
+    for i in range(len(VALID_MATRIX)):
+        for j in range(len(VALID_MATRIX[0])):
+            VALID_MATRIX[i][j] = 0

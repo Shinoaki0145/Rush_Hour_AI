@@ -25,10 +25,11 @@ def ids(start):
         if result:
             break
         explored.clear()
-    if not result:
-        return [start]
     
     path = []
+    if not result:
+        return path
+    
     while result != start:
         path.append(result)
         result = result.parent
