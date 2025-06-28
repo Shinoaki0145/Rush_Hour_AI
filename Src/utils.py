@@ -30,7 +30,7 @@ class GameUtils:
         elif button_name == "exit":
             return self.exit_game()
         elif button_name == "play":
-            return self.play_game(manage_car, game_popup)
+            return self.play_game(game_popup)
         elif button_name == "stop":
             return self.pause_game(manage_car)
         elif button_name == "mute":
@@ -67,7 +67,7 @@ class GameUtils:
             # game_objects = self.setup_next_level(game_objects)
             game_popup.hide()
             self.game_completed = False
-        reurn self.reset_game(manage_car)
+        return self.reset_game(manage_car)
     #def setup_next_level(self, game_objects):
     
     def get_selected_algorithm(self):
