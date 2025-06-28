@@ -93,4 +93,10 @@ class MainCar(Car):
         super().__init__("target_car", x, y, image, is_horizontal = True, direc = "right")
 
     def is_at_exit(self):
-        return self.x + self.length_grid - 1 == 5
+        return self.x == 4
+    
+    def update(self):
+        if self.is_at_exit():
+            self.offset_x += defs.MOVE_SPEED
+        else:
+            super().update()
