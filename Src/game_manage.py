@@ -48,7 +48,7 @@ running = True
 board = Board(console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
 # Initialize game objects
-map_name = "map12"
+map_name = "map1"
 manage_car = load_map(map_name)
 
 # Initialize UI and Utils
@@ -145,7 +145,7 @@ while running:
                     display_manager.update_display_text("moves", "MOVES :  0")
                 elif clicked_button == "play":
                     # Hiển thị popup algorithm selection
-                    game_utils.handle_button_action(clicked_button, game_popup)
+                    game_utils.handle_button_action(clicked_button, manage_car, game_popup)
                 else:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
 
@@ -162,13 +162,13 @@ while running:
         
         # Chọn algorithm implementation
         if selected_algo == "BFS":
-            path = ids(start)
+            path = bfs(start)
         elif selected_algo == "IDS":
             path = ids(start)  # IDS implementation
         elif selected_algo == "A STAR":
-            path = ids(start)
+            path = a_star(start)
         elif selected_algo == "UCS":
-            path = ids(start)
+            path = ucs(start)
         else:
             path = ids(start)
             
