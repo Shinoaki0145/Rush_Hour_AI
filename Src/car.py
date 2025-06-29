@@ -97,6 +97,6 @@ class MainCar(Car):
     
     def update(self):
         if self.is_at_exit():
-            self.offset_x += defs.MOVE_SPEED
+            self.offset_x += (defs.MOVE_SPEED + 4)
         else:
             super().update()

@@ -64,11 +64,49 @@ class GameUtils:
         elif action == "next_level":
             # Chuyển sang level tiếp theo
             self.current_level += 1
-            # game_objects = self.setup_next_level(game_objects)
             game_popup.hide()
             self.game_completed = False
         return self.reset_game(manage_car)
-    #def setup_next_level(self, game_objects):
+    
+    def handle_lose_popup_action(self, action, manage_car, game_popup):
+        """
+        Xử lý action từ lose popup
+        """
+        if action == "reset":
+            # Reset game về trạng thái ban đầu của level hiện tại
+            game_popup.hide()
+            self.game_completed = False
+        elif action == "exit":
+            # Thoát game
+            self.exit_game()
+        return self.reset_game(manage_car)
+    
+    def handle_final_win_1_popup_action(self, action, manage_car, game_popup):
+        """
+        Xử lý action từ final win 1 popup
+        """
+        if action == "next_popup":
+            # Chuyển sang final_win_2 popup
+            game_popup.show_final_win_2_message()
+        elif action == "exit":
+            # Thoát game
+            self.exit_game()
+        return manage_car
+
+    def handle_final_win_2_popup_action(self, action, manage_car, game_popup, load_map_func):
+        """
+        Xử lý action từ final win 2 popup (code cũ)
+        """
+        if action.startswith("level_"):
+            level = int(action.replace("level_", ""))
+            map_name = f"map{level}"
+            manage_car = load_map_func(map_name)
+            self.current_level = level
+            game_popup.hide()
+            self.game_completed = False
+        elif action == "exit":
+            self.exit_game()
+        return manage_car
     
     def get_selected_algorithm(self):
         """Lấy algorithm hiện tại được chọn"""
@@ -129,5 +167,19 @@ class GameUtils:
         """
         target_car = manage_car.cars["target_car"]
         if target_car and target_car.is_at_exit():
+            return True
+        return False
+
+    def check_lose_condition(self, path=None, algorithm_completed=False):
+        if algorithm_completed and (path is None or len(path) == 0):
+            return True
+        
+        return False
+    
+    def check_final_win_condition(self, manage_car):
+        """
+        Kiểm tra điều kiện final win (hoàn thành level 12)
+        """
+        if self.current_level == 12 and self.check_win_condition(manage_car):
             return True
         return False
