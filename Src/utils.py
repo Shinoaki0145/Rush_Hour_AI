@@ -6,7 +6,7 @@ from defs import *
 class GameUtils:
     def __init__(self, console):
         self.console = console
-        self.selected_algorithm = "IDS"  # Default algorithm
+        self.selected_algorithm = "A STAR"  # Default algorithm
         self.current_level = 1
         self.game_completed = False
     
@@ -50,7 +50,6 @@ class GameUtils:
         self.game_completed = False
 
     def reset_game(self, manage_car):
-        
         return manage_car
     
     def handle_win_popup_action(self, action, manage_car, game_popup):
@@ -61,13 +60,14 @@ class GameUtils:
             # Reset game về trạng thái ban đầu của level hiện tại
             game_popup.hide()
             self.game_completed = False
+            return (self.reset_game(manage_car), True)
         elif action == "next_level":
             # Chuyển sang level tiếp theo
             self.current_level += 1
             # game_objects = self.setup_next_level(game_objects)
             game_popup.hide()
             self.game_completed = False
-        return self.reset_game(manage_car)
+        return (self.reset_game(manage_car), False)
     #def setup_next_level(self, game_objects):
     
     def get_selected_algorithm(self):

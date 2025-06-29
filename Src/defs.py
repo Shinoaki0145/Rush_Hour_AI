@@ -27,7 +27,9 @@ BLUE_LIGHT = (74, 158, 255)
 BACKGROUND = (240, 240, 240)
 
 MOVE_SPEED = 3
+EXIT_MOVE_SPEED = MOVE_SPEED + 4
 STEP_DELAY = 500
+RESET_DELAY = 500
 
 SRC_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 ASSET_PATH = SRC_PATH + "../Asset/"

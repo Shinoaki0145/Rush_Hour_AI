@@ -17,6 +17,7 @@ def bfs(start):
             while current_state != start:
                 path.append(current_state)
                 current_state = current_state.parent
+            path.append(start)
             path.reverse()
             return path  
 
@@ -24,7 +25,9 @@ def bfs(start):
 
         for next_state in current_state.next_states():
             state_tuple = next_state.to_tuple()
-            if state_tuple not in explored:
+            # Không nằm trong explored và frontier
+            if (state_tuple not in explored and
+               not any(s.to_tuple() == state_tuple for s in frontier)):
                 frontier.append(next_state)
 
     return None  # Không tìm thấy lời giải

@@ -1,4 +1,4 @@
-2,2
+0,2
 truck,4,0,0,down
 car,3,3,0,down
 car,4,4,1,right

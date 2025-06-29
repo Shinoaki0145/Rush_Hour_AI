@@ -20,6 +20,7 @@ def ucs(start_state):
             while current_state != start_state:
                 path.append(current_state)
                 current_state = current_state.parent
+            path.append(start_state)
             path.reverse()
             return path
 
@@ -27,7 +28,8 @@ def ucs(start_state):
 
         for next_state in current_state.next_states():
             state_tuple = next_state.to_tuple()
-            if state_tuple not in explored:
+            if (state_tuple not in explored and
+                not any(s.to_tuple() == state_tuple for _,_,s in frontier)):
                 heapq.heappush(frontier, (next_state.cost, next(unique), next_state))
 
     return None  # Không tìm thấy lời giải
