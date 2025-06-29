@@ -117,7 +117,7 @@ while running:
                         next_lv = game_utils.handle_win_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
-                        
+                        display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                         # Reset variables
                         if next_lv:
                             map_name = "map" + str(game_utils.get_current_level())
@@ -132,13 +132,18 @@ while running:
                         is_moving,
                         waiting_for_next_step) = init_common_game_var()
 
-                    elif game_popup.popup_type == "lose":
+                    elif game_popup.popup_type == "lose":    
                         # Xử lý lose popup
-                        mange_car = game_utils.handle_lose_popup_action(clicked_popup_button, load_map(map_name), game_popup)
+                        reset_level = game_utils.handle_lose_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
+                        display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                         
                         # Reset variables
+                        if reset_level:  # Nếu cần reset level
+                            manage_car = load_map(map_name)
+                        lv_started = False
+
                         (searched,
                         path,
                         current_step,
@@ -166,17 +171,20 @@ while running:
                         
                         # Cập nhật display và reset variables chỉ khi không exit
                         if clicked_popup_button != "exit":
+                            map_name = "map" + str(game_utils.get_current_level())
                             display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                             display_manager.update_display_text("moves", "MOVES :  0")
-                            
+                            display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                             # Reset algorithm variables
-                            (searched,
-                            path,
-                            current_step,
-                            moves_count,
-                            step_timer,
-                            is_moving,
-                            waiting_for_next_step) = init_common_game_var()
+                            searched = False
+                            path = []
+                            current_step = 0
+                            step_timer = 0
+                            is_moving = False
+                            waiting_for_next_step = False
+                            moves_count = 0
+                            algorithm_execution_completed = False
+                            lv_started = False 
                 continue
             
             # Kiểm tra click vào main buttons
@@ -186,7 +194,9 @@ while running:
                     running = False
                     game_utils.handle_button_action(clicked_button, manage_car)
                 elif clicked_button == "reset":
-                    manage_car = game_utils.handle_button_action(clicked_button, load_map(map_name))
+                    # Lấy level hiện tại và tạo map_name tương ứng
+                    current_map_name = "map" + str(game_utils.get_current_level())
+                    manage_car = game_utils.handle_button_action(clicked_button, load_map(current_map_name))
                     # Reset algorithm variables
                     (searched,
                     path,
@@ -209,8 +219,8 @@ while running:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
     if resetting and current_time - reset_timer >= RESET_DELAY:
         resetting = False
-    # Run search - chỉ chạy khi không có popup hiển thị
-    if lv_started and not searched and not game_popup.visible:
+    #if lv_started and not searched:
+    if lv_started and not searched and game_utils.has_selected_algorithm() and not game_popup.visible:
         cars = []
         for car in manage_car.cars.values():
             cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
