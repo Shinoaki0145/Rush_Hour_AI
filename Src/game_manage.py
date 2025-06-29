@@ -128,6 +128,54 @@ while running:
                         step_timer,
                         is_moving,
                         waiting_for_next_step) = init_common_game_var()
+
+                    elif game_popup.popup_type == "lose":
+                        # Xử lý lose popup
+                        mange_car = game_utils.handle_lose_popup_action(clicked_popup_button, load_map(map_name), game_popup)
+                        display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
+                        display_manager.update_display_text("moves", "MOVES :  0")
+                        
+                        # Reset variables
+                        searched = False
+                        path = []
+                        current_step = 0
+                        step_timer = 0
+                        is_moving = False
+                        waiting_for_next_step = False
+                        moves_count = 0
+                        algorithm_execution_completed = False
+                        
+                    elif game_popup.popup_type == "final_win_1":
+                        # Xử lý final win 1 popup
+                        manage_car = game_utils.handle_final_win_1_popup_action(
+                            clicked_popup_button, 
+                            manage_car, 
+                            game_popup
+                        )
+
+                    elif game_popup.popup_type == "final_win_2":
+                        # Xử lý final win 2 popup
+                        manage_car = game_utils.handle_final_win_2_popup_action(
+                            clicked_popup_button, 
+                            manage_car, 
+                            game_popup, 
+                            load_map
+                        )
+                        
+                        # Cập nhật display và reset variables chỉ khi không exit
+                        if clicked_popup_button != "exit":
+                            display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
+                            display_manager.update_display_text("moves", "MOVES :  0")
+                            
+                            # Reset algorithm variables
+                            searched = False
+                            path = []
+                            current_step = 0
+                            step_timer = 0
+                            is_moving = False
+                            waiting_for_next_step = False
+                            moves_count = 0
+                            algorithm_execution_completed = False
                 continue
             
             # Kiểm tra click vào main buttons
@@ -186,7 +234,14 @@ while running:
         current_step = 1
         step_timer = current_time
         searched = True
-        print(f"Found path with {len(path)} steps using {selected_algo}")
+
+        if game_utils.check_lose_condition(path, True):
+            print(f"No solution found with {selected_algo}")
+            current_algorithm = game_utils.get_selected_algorithm()
+            game_popup.show_lose_message(game_utils.get_current_level(), current_algorithm)
+            algorithm_execution_completed = True
+        else:
+            print(f"Found path with {len(path)} steps using {selected_algo}")
 
     # Draw game elements
     screen.blit(board.image, (board.offset_x, board.offset_y))
@@ -222,12 +277,20 @@ while running:
                     # Algorithm execution completed
                     print(f"Algorithm execution completed! Total moves: {moves_count}")
 
-                    # Kiểm tra win condition
                     if game_utils.check_win_condition(manage_car):
-                        # Hiển thị win popup với algorithm được sử dụng
                         current_algorithm = game_utils.get_selected_algorithm()
-                        game_popup.show_win_message(game_utils.get_current_level(), moves_count, current_algorithm)
+                        
+                        # Kiểm tra final win condition (level 12)
+                        if game_utils.check_final_win_condition(manage_car):
+                            game_popup.show_final_win_1_message(game_utils.get_current_level(), moves_count, current_algorithm)
+                        else:
+                            game_popup.show_win_message(game_utils.get_current_level(), moves_count, current_algorithm)
+                        
                         game_utils.set_game_completed(True)
+                    # Kiểm tra lose condition
+                    elif game_utils.check_lose_condition(path, True):
+                        current_algorithm = game_utils.get_selected_algorithm()
+                        game_popup.show_lose_message(game_utils.get_current_level(), current_algorithm)
     else:
         # Update cars khi không có algorithm execution
         manage_car.update_car()
