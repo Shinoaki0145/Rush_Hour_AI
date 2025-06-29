@@ -115,7 +115,7 @@ while running:
                         next_lv = game_utils.handle_win_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
-                        
+                        display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                         # Reset variables
                         if next_lv:
                             map_name = "map" + str(game_utils.get_current_level())
