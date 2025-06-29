@@ -50,15 +50,15 @@ pygame.display.set_caption('Rush Hour')
 running = True  
 board = Board(console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
-# Initialize game objects
-map_name = "map1"
-manage_car = load_map(map_name)
-
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
 display_manager = DisplayManager(console)
 game_popup = GamePopup(console)
 game_utils = GameUtils(console)
+
+# Initialize cars
+map_name = "map" + str(game_utils.get_current_level())
+manage_car = load_map(map_name)
 
 # Initialize game logic
 (searched,
@@ -112,13 +112,15 @@ while running:
                         
                     elif game_popup.popup_type == "win":
                         # Xử lý win popup
-                        manage_car, rst_lv = game_utils.handle_win_popup_action(clicked_popup_button, load_map(map_name), game_popup)
+                        next_lv = game_utils.handle_win_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
                         
                         # Reset variables
-                        if rst_lv:
-                            lv_started = False
+                        if next_lv:
+                            map_name = "map" + str(game_utils.get_current_level())
+                        manage_car = load_map(map_name)
+                        lv_started = False
                         (searched,
                         path,
                         current_step,
@@ -231,7 +233,10 @@ while running:
         manage_car.update_car()
 
     manage_car.draw_all(screen)
-    
+    if not lv_started:
+        target_car = manage_car.cars["target_car"]
+        screen.blit(console.reSize_Image(HIGHLIGHT_PATH), (target_car.offset_x, target_car.offset_y))
+        
     # Draw UI elements
     button_manager.draw_all_buttons(screen)
     display_manager.draw_all_displays(screen)

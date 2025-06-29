@@ -37,6 +37,7 @@ BUTTON_PATH = ASSET_PATH + "Button/"
 CAR_PATH = ASSET_PATH + "Car/"
 DISPLAY_PATH = ASSET_PATH + "Display/"
 FONT_PATH = ASSET_PATH + "Font/"
+HIGHLIGHT_PATH = ASSET_PATH + "Highlight/car_highlight.png"
 
 TARGET_CAR_PATH = CAR_PATH + "car_target.png"
 

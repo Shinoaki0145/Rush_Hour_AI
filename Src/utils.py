@@ -52,24 +52,18 @@ class GameUtils:
     def reset_game(self, manage_car):
         return manage_car
     
-    def handle_win_popup_action(self, action, manage_car, game_popup):
+    def handle_win_popup_action(self, action, game_popup):
         """
         Xử lý action từ win popup
         """
-        if action == "reset":
-            # Reset game về trạng thái ban đầu của level hiện tại
-            game_popup.hide()
-            self.game_completed = False
-            return (self.reset_game(manage_car), True)
-        elif action == "next_level":
+        game_popup.hide()
+        self.game_completed = False
+        if action == "next_level":
             # Chuyển sang level tiếp theo
             self.current_level += 1
-            # game_objects = self.setup_next_level(game_objects)
-            game_popup.hide()
-            self.game_completed = False
-        return (self.reset_game(manage_car), False)
-    #def setup_next_level(self, game_objects):
-    
+            return True
+        elif action == "reset":
+            return False
     def get_selected_algorithm(self):
         """Lấy algorithm hiện tại được chọn"""
         return self.selected_algorithm
