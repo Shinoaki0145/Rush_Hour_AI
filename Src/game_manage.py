@@ -129,21 +129,24 @@ while running:
                         is_moving,
                         waiting_for_next_step) = init_common_game_var()
 
-                    elif game_popup.popup_type == "lose":
+                    elif game_popup.popup_type == "lose":    
                         # Xử lý lose popup
-                        mange_car = game_utils.handle_lose_popup_action(clicked_popup_button, load_map(map_name), game_popup)
+                        reset_level = game_utils.handle_lose_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
+                        display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                         
                         # Reset variables
-                        searched = False
-                        path = []
-                        current_step = 0
-                        step_timer = 0
-                        is_moving = False
-                        waiting_for_next_step = False
-                        moves_count = 0
-                        algorithm_execution_completed = False
+                        if reset_level:  # Nếu cần reset level
+                            manage_car = load_map(map_name)
+                        lv_started = False
+                        (searched,
+                        path,
+                        current_step,
+                        moves_count,
+                        step_timer,
+                        is_moving,
+                        waiting_for_next_step) = init_common_game_var()
                         
                     elif game_popup.popup_type == "final_win_1":
                         # Xử lý final win 1 popup
@@ -164,9 +167,10 @@ while running:
                         
                         # Cập nhật display và reset variables chỉ khi không exit
                         if clicked_popup_button != "exit":
+                            map_name = "map" + str(game_utils.get_current_level())
                             display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                             display_manager.update_display_text("moves", "MOVES :  0")
-                            
+                            display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                             # Reset algorithm variables
                             searched = False
                             path = []
@@ -176,6 +180,7 @@ while running:
                             waiting_for_next_step = False
                             moves_count = 0
                             algorithm_execution_completed = False
+                            lv_started = False 
                 continue
             
             # Kiểm tra click vào main buttons
@@ -185,7 +190,9 @@ while running:
                     running = False
                     game_utils.handle_button_action(clicked_button, manage_car)
                 elif clicked_button == "reset":
-                    manage_car = game_utils.handle_button_action(clicked_button, load_map(map_name))
+                    # Lấy level hiện tại và tạo map_name tương ứng
+                    current_map_name = "map" + str(game_utils.get_current_level())
+                    manage_car = game_utils.handle_button_action(clicked_button, load_map(current_map_name))
                     # Reset algorithm variables
                     (searched,
                     path,
@@ -208,8 +215,8 @@ while running:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
     if resetting and current_time - reset_timer >= RESET_DELAY:
         resetting = False
-    # Run search - chỉ chạy khi không có popup hiển thị
-    if lv_started and not searched:
+    #if lv_started and not searched:
+    if lv_started and not searched and game_utils.has_selected_algorithm() and not game_popup.visible:
         cars = []
         for car in manage_car.cars.values():
             cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
@@ -241,7 +248,7 @@ while running:
             game_popup.show_lose_message(game_utils.get_current_level(), current_algorithm)
             algorithm_execution_completed = True
         else:
-            print(f"Found path with {len(path)} steps using {selected_algo}")
+            print(f"Found path with {len(path)} states using {selected_algo}")
 
     # Draw game elements
     screen.blit(board.image, (board.offset_x, board.offset_y))
