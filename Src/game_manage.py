@@ -36,6 +36,9 @@ def load_map(map_name):
             car_count += 1
     return new_manage_car
 
+def init_common_game_var():
+    return (False, [], 1, 0, 0, False, False)
+
 
 pygame.init()
 console = console.Console()
@@ -47,34 +50,35 @@ pygame.display.set_caption('Rush Hour')
 running = True  
 board = Board(console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
-# Initialize game objects
-map_name = "map1"
-manage_car = load_map(map_name)
-
 # Initialize UI and Utils
 button_manager = ButtonManager(console)
 display_manager = DisplayManager(console)
 game_popup = GamePopup(console)
 game_utils = GameUtils(console)
 
-searched = False
-path = []
-current_step = 0
-moves_count = 0
-step_timer = 0
-is_moving = False
-waiting_for_next_step = False
-algorithm_execution_completed = False
+# Initialize cars
+map_name = "map" + str(game_utils.get_current_level())
+manage_car = load_map(map_name)
+
+# Initialize game logic
+(searched,
+path,
+current_step,
+moves_count,
+step_timer,
+is_moving,
+waiting_for_next_step) = init_common_game_var()
+lv_started = False
+resetting = False
+reset_timer = 0
 
 while running:  
     current_time = pygame.time.get_ticks()
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             running = False
-            exit()  
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos
-            
             # Kiểm tra click vào popup trước
             if game_popup.visible:
                 clicked_popup_button = game_popup.check_button_click(mouse_pos)
@@ -94,14 +98,13 @@ while running:
                         game_popup.hide()
                         
                         # Reset variables
-                        searched = False
-                        path = []
-                        current_step = 0
-                        step_timer = 0
-                        is_moving = False
-                        waiting_for_next_step = False
-                        moves_count = 0
-                        algorithm_execution_completed = False
+                        (searched,
+                        path,
+                        current_step,
+                        moves_count,
+                        step_timer,
+                        is_moving,
+                        waiting_for_next_step) = init_common_game_var()
                         
                         # Debug
                         print(f"Display text: {algorithm_display_text}")
@@ -109,19 +112,22 @@ while running:
                         
                     elif game_popup.popup_type == "win":
                         # Xử lý win popup
-                        manage_car = game_utils.handle_win_popup_action(clicked_popup_button, load_map(map_name), game_popup)
+                        next_lv = game_utils.handle_win_popup_action(clicked_popup_button, game_popup)
                         display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
                         display_manager.update_display_text("moves", "MOVES :  0")
                         
                         # Reset variables
-                        searched = False
-                        path = []
-                        current_step = 0
-                        step_timer = 0
-                        is_moving = False
-                        waiting_for_next_step = False
-                        moves_count = 0
-                        algorithm_execution_completed = False
+                        if next_lv:
+                            map_name = "map" + str(game_utils.get_current_level())
+                        manage_car = load_map(map_name)
+                        lv_started = False
+                        (searched,
+                        path,
+                        current_step,
+                        moves_count,
+                        step_timer,
+                        is_moving,
+                        waiting_for_next_step) = init_common_game_var()
 
                     elif game_popup.popup_type == "lose":
                         # Xử lý lose popup
@@ -181,29 +187,34 @@ while running:
                 elif clicked_button == "reset":
                     manage_car = game_utils.handle_button_action(clicked_button, load_map(map_name))
                     # Reset algorithm variables
-                    searched = False
-                    path = []
-                    current_step = 0
-                    step_timer = 0
-                    is_moving = False
-                    waiting_for_next_step = False
-                    moves_count = 0
-                    algorithm_execution_completed = False
+                    (searched,
+                    path,
+                    current_step,
+                    moves_count,
+                    step_timer,
+                    is_moving,
+                    waiting_for_next_step) = init_common_game_var()
                     # Cập nhật display
                     display_manager.update_display_text("moves", "MOVES :  0")
+                    # Start reset timer
+                    resetting = True
+                    reset_timer = current_time
                 elif clicked_button == "play":
                     # Hiển thị popup algorithm selection
-                    game_utils.handle_button_action(clicked_button, manage_car, game_popup)
+                    if not lv_started:
+                        game_utils.handle_button_action(clicked_button, manage_car, game_popup)
+                        lv_started = True
                 else:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
-
+    if resetting and current_time - reset_timer >= RESET_DELAY:
+        resetting = False
     # Run search - chỉ chạy khi không có popup hiển thị
-    if not searched and not game_popup.visible and not algorithm_execution_completed:
+    if lv_started and not searched:
         cars = []
         for car in manage_car.cars.values():
             cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
         start = State(cars)
-        
+
         # Lấy algorithm được chọn
         selected_algo = game_utils.get_selected_algorithm()
         print(f"Running search with algorithm: {selected_algo}")
@@ -212,15 +223,15 @@ while running:
         if selected_algo == "BFS":
             path = bfs(start)
         elif selected_algo == "IDS":
-            path = ids(start)  # IDS implementation
+            path = ids(start)
         elif selected_algo == "A STAR":
             path = a_star(start)
         elif selected_algo == "UCS":
             path = ucs(start)
         else:
-            path = ids(start)
+            path = a_star(start)
             
-        current_step = 0
+        current_step = 1
         step_timer = current_time
         searched = True
 
@@ -236,10 +247,9 @@ while running:
     screen.blit(board.image, (board.offset_x, board.offset_y))
     
     # Algorithm execution with step timing - chỉ chạy khi không có popup
-    if searched and path and not game_popup.visible and not algorithm_execution_completed:
+    if not resetting and searched and path and not game_popup.visible:
         # Kiểm tra xem có xe nào đang di chuyển không
         cars_moving = manage_car.update_car()
-        
         if not cars_moving:  # Không có xe nào đang di chuyển
             if waiting_for_next_step:
                 # Đang chờ để thực hiện step tiếp theo
@@ -266,8 +276,7 @@ while running:
                 else:
                     # Algorithm execution completed
                     print(f"Algorithm execution completed! Total moves: {moves_count}")
-                    algorithm_execution_completed = True
-                    
+
                     if game_utils.check_win_condition(manage_car):
                         current_algorithm = game_utils.get_selected_algorithm()
                         
@@ -287,7 +296,10 @@ while running:
         manage_car.update_car()
 
     manage_car.draw_all(screen)
-    
+    if not lv_started:
+        target_car = manage_car.cars["target_car"]
+        screen.blit(console.reSize_Image(HIGHLIGHT_PATH), (target_car.offset_x, target_car.offset_y))
+        
     # Draw UI elements
     button_manager.draw_all_buttons(screen)
     display_manager.draw_all_displays(screen)

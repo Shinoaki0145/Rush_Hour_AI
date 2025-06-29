@@ -15,8 +15,13 @@ def a_star(start):
     while not frontier.empty():
         cost, _, current = frontier.get()
         if current.cars[0].coord[1] + current.cars[0].length == 6:
-            result = current
-            break
+            path = []
+            while current != start:
+                path.append(current)
+                current = current.parent
+            path.append(start)
+            path.reverse()
+            return path
 
         current_tuple = current.to_tuple()
         if current_tuple in dist and dist[current_tuple] < cost: # Skip longer path
@@ -29,12 +34,4 @@ def a_star(start):
                 dist[state_tuple] = new_cost
                 frontier.put((new_cost, next(unique), state))
 
-    path = []
-    if not result:
-        return path
-    
-    while result != start:
-        path.append(result)
-        result = result.parent
-    path.reverse()
-    return path
+    return None
