@@ -204,7 +204,7 @@ class DisplayManager:
                 "image": self.display_images["algorithm"],
                 "pos": (self.console.screen_size // 2 - 85, 175),
                 "text_pos": (self.console.screen_size // 2 - 55, 179),
-                "text": "ALGORITHM :  IDS"
+                "text": "ALGORITHM :  "
             },
             "level": {
                 "image": self.display_images["level"], 
