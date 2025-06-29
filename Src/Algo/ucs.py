@@ -8,9 +8,11 @@ def ucs(start_state):
 
     heapq.heappush(frontier, (start_state.cost, next(unique), start_state))
     explored = set()
-
+    
+    state_count = 0
     while frontier:
-        current_cost, _, current_state = heapq.heappop(frontier)
+        state_count += 1
+        _, _, current_state = heapq.heappop(frontier)
 
         # Kiểm tra goal
         main_car = current_state.cars[0]
@@ -22,6 +24,7 @@ def ucs(start_state):
                 current_state = current_state.parent
             path.append(start_state)
             path.reverse()
+            print(f"Expanded nodes: {state_count}")
             return path
 
         explored.add(current_state.to_tuple())

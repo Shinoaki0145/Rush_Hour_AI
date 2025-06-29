@@ -8,12 +8,18 @@ def heuristic(car):
 def a_star(start):
     frontier = PriorityQueue()
     unique = count()
-    dist = {}
-    result = None
+    explored = set()
+    dist = {} # for faster frontier lookup
+    state_count = 0
 
     frontier.put((heuristic(start.cars[0]), next(unique), start))
+    dist[start.to_tuple()] = 0
     while not frontier.empty():
-        cost, _, current = frontier.get()
+        state_count += 1
+        _, _, current = frontier.get()
+        cur_tup = current.to_tuple()
+        dist.pop(cur_tup)
+
         if current.cars[0].coord[1] + current.cars[0].length == 6:
             path = []
             while current != start:
@@ -21,16 +27,15 @@ def a_star(start):
                 current = current.parent
             path.append(start)
             path.reverse()
+            print(f"Expanded nodes: {state_count}")
             return path
 
-        current_tuple = current.to_tuple()
-        if current_tuple in dist and dist[current_tuple] < cost: # Skip longer path
-            continue
-
+        explored.add(cur_tup)
         for state in current.next_states():
             new_cost = heuristic(state.cars[0]) + state.cost
             state_tuple = state.to_tuple()
-            if state_tuple not in dist or new_cost < dist[state_tuple]:
+            # If child node not in explored and not in frontier
+            if state_tuple not in explored and state_tuple not in dist:
                 dist[state_tuple] = new_cost
                 frontier.put((new_cost, next(unique), state))
 

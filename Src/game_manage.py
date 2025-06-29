@@ -8,6 +8,8 @@ from ui import *
 from utils import *
 from Algo import *
 from random import choice
+from time import time
+import tracemalloc, gc
 
 def load_map(map_name):
     clear_valid_matrix()
@@ -121,6 +123,7 @@ while running:
                             map_name = "map" + str(game_utils.get_current_level())
                         manage_car = load_map(map_name)
                         lv_started = False
+                        display_manager.update_display_text("algorithm", "ALGORITHM :  ")
                         (searched,
                         path,
                         current_step,
@@ -140,6 +143,7 @@ while running:
                         if reset_level:  # Nếu cần reset level
                             manage_car = load_map(map_name)
                         lv_started = False
+
                         (searched,
                         path,
                         current_step,
@@ -227,6 +231,9 @@ while running:
         print(f"Running search with algorithm: {selected_algo}")
         
         # Chọn algorithm implementation
+        gc.collect() # Dọn garbage collector trước khi đo memory
+        tracemalloc.start()
+        begin = time()
         if selected_algo == "BFS":
             path = bfs(start)
         elif selected_algo == "IDS":
@@ -237,18 +244,23 @@ while running:
             path = ucs(start)
         else:
             path = a_star(start)
-            
+        
+        time_taken = round(time() - begin, 4)
+        memory_used = round(tracemalloc.get_traced_memory()[1] / (1024 ** 2), 2)
+        tracemalloc.stop()
+        print(f"Time taken: {time_taken} seconds.")
+        print(f"Memory peaked: {memory_used} MB.")
+
         current_step = 1
         step_timer = current_time
         searched = True
-
+        
         if game_utils.check_lose_condition(path, True):
             print(f"No solution found with {selected_algo}")
             current_algorithm = game_utils.get_selected_algorithm()
             game_popup.show_lose_message(game_utils.get_current_level(), current_algorithm)
-            algorithm_execution_completed = True
         else:
-            print(f"Found path with {len(path)} states using {selected_algo}")
+            print(f"Found path with {len(path)} states, including start, using {selected_algo}")
 
     # Draw game elements
     screen.blit(board.image, (board.offset_x, board.offset_y))
@@ -275,7 +287,7 @@ while running:
                     # Cập nhật hiển thị số bước di chuyển
                     display_manager.update_display_text("moves", f"MOVES :  {moves_count}")
                     
-                    print(f"Executing step {current_step + 1}/{len(path)}")
+                    print(f"Executing step {current_step}/{len(path) - 1}")
                     
                     # Bắt đầu đếm thời gian chờ cho step tiếp theo
                     step_timer = current_time
