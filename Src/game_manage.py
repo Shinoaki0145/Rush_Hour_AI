@@ -146,6 +146,12 @@ while running:
                 elif clicked_button == "play":
                     # Hiển thị popup algorithm selection
                     game_utils.handle_button_action(clicked_button, manage_car, game_popup)
+                elif clicked_button == "mute":
+                    game_utils.handle_button_action(clicked_button, manage_car)
+                    if game_utils.audio_muted:
+                        button_manager.update_button_icon("mute", "Asset/Button/but_no_audio.png")
+                    else:
+                        button_manager.update_button_icon("mute", "Asset/Button/but_audio.png")
                 else:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
 
@@ -218,6 +224,7 @@ while running:
                         # Hiển thị win popup với algorithm được sử dụng
                         current_algorithm = game_utils.get_selected_algorithm()
                         game_popup.show_win_message(game_utils.get_current_level(), moves_count, current_algorithm)
+                        game_utils.play_win_music()
                         game_utils.set_game_completed(True)
     else:
         # Update cars khi không có algorithm execution

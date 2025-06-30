@@ -9,6 +9,16 @@ class GameUtils:
         self.selected_algorithm = "IDS"  # Default algorithm
         self.current_level = 1
         self.game_completed = False
+        self.audio_muted = False  # Trạng thái âm thanh
+
+        # đường dẫn đến các file âm thanh
+        pygame.mixer.init()
+        self.bg_music_path = "Asset/Audio/bg_music.mp3"
+        self.win_music_path = "Asset/Audio/win_music.wav"
+        self.fail_music_path = "Asset/Audio/fail_music.wav"
+
+        pygame.mixer.music.load(self.bg_music_path)
+        pygame.mixer.music.play(-1)  # Phát lặp vô hạn
     
     def check_button_click(self, mouse_pos, button_manager):
         """
@@ -103,9 +113,26 @@ class GameUtils:
         manage_car.pause_all_cars()
         return manage_car
     
+    # Xử lý âm thanh
+    def play_win_music(self):
+        pygame.mixer.music.load(self.win_music_path)
+        pygame.mixer.music.play()
+
+    def play_fail_music(self):
+        pygame.mixer.music.load(self.fail_music_path)
+        pygame.mixer.music.play()
+
+    def play_bg_music(self):
+        pygame.mixer.music.load(self.bg_music_path)
+        pygame.mixer.music.play(-1)
+
     def toggle_mute(self):
         """Bật/tắt âm thanh"""
-        self.console.toggle_audio()
+        self.audio_muted = not self.audio_muted
+        if self.audio_muted:
+            pygame.mixer.music.set_volume(0)
+        else:
+            pygame.mixer.music.set_volume(1)
         return True
     
     def show_info(self):

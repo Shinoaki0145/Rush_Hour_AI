@@ -309,6 +309,14 @@ class ButtonManager:
         if button_name in self.buttons:
             return self.buttons[button_name]["rect"]
         return None
+    
+    def update_button_icon(self, button_name, new_image_path, screen=None):
+        # Cập nhật icon cho nút và tùy chọn vẽ lại ngay.
+        if button_name in self.buttons:
+            new_image = self.console.reSize_Image(new_image_path)
+            self.buttons[button_name]["image"] = new_image
+            if screen:
+                self.draw_button(screen, button_name)
 
 def create_3d_text(screen, text, size, x, y):
     """Tạo hiệu ứng chữ 3D với viền"""
