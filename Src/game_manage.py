@@ -218,9 +218,9 @@ while running:
                 elif clicked_button == "mute":
                     game_utils.handle_button_action(clicked_button, manage_car)
                     if game_utils.audio_muted:
-                        button_manager.update_button_icon("mute", "Asset/Button/but_no_audio.png")
+                        button_manager.update_button_icon("mute", BUTTON_PATH + "but_no_audio.png")
                     else:
-                        button_manager.update_button_icon("mute", "Asset/Button/but_audio.png")
+                        button_manager.update_button_icon("mute", BUTTON_PATH + "but_audio.png")
                 else:
                     manage_car = game_utils.handle_button_action(clicked_button, manage_car)
     if resetting and current_time - reset_timer >= RESET_DELAY:

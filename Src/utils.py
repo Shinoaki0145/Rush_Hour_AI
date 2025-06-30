@@ -7,15 +7,15 @@ class GameUtils:
     def __init__(self, console):
         self.console = console
         self.selected_algorithm = None
-        self.current_level = 12
+        self.current_level = 1
         self.game_completed = False
         self.audio_muted = False  # Trạng thái âm thanh
 
         # đường dẫn đến các file âm thanh
         pygame.mixer.init()
-        self.bg_music_path = "Asset/Audio/bg_music.mp3"
-        self.win_music_path = "Asset/Audio/win_music.wav"
-        self.fail_music_path = "Asset/Audio/fail_music.wav"
+        self.bg_music_path = AUDIO_PATH + "bg_music.mp3"
+        self.win_music_path = AUDIO_PATH + "win_music.wav"
+        self.fail_music_path = AUDIO_PATH + "fail_music.wav"
 
         pygame.mixer.music.load(self.bg_music_path)
         pygame.mixer.music.play(-1)  # Phát lặp vô hạn
