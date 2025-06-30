@@ -11,8 +11,9 @@ class GamePopup:
         self.setup_popup()
         
         # Win popup specific data
-        self.level = 1
+        self.level = 0
         self.moves = 0
+        self.cost = 0
         self.algorithm = ""
         
         # Load button images cho win popup
@@ -50,12 +51,13 @@ class GamePopup:
         self.visible = True
         self.selected_option = None
         self.setup_algorithm_buttons()
-    
-    def show_win_message(self, level, moves, algorithm="IDS"):
+
+    def show_win_message(self, level, moves, cost, algorithm="IDS"):
         self.popup_type = "win"
         self.visible = True
         self.level = level
         self.moves = moves
+        self.cost = cost
         self.algorithm = algorithm
         self.selected_option = None
         self.setup_win_buttons()
@@ -68,12 +70,13 @@ class GamePopup:
         self.selected_option = None
         self.setup_lose_buttons()
         
-    def show_final_win_1_message(self, level, moves, algorithm="IDS"):
+    def show_final_win_1_message(self, level, moves, cost, algorithm="IDS"):
         """Hiển thị final win popup đầu tiên (giống win popup nhưng có exit và next)"""
         self.popup_type = "final_win_1"
         self.visible = True
         self.level = level
         self.moves = moves
+        self.cost = cost
         self.algorithm = algorithm
         self.selected_option = None
         self.setup_final_win_1_buttons()
@@ -285,7 +288,8 @@ class GamePopup:
     def draw_win_popup(self, screen):
         """Vẽ win message popup"""
         congrat_text = f"CONGRATULATIONS!"
-        info_text = f"YOU WIN LEVEL {self.level} WITH {self.moves} MOVES"
+        info_text_1 = f"YOU WIN LEVEL {self.level}"
+        info_text_2 = f"WITH {self.moves} MOVES AND COST {self.cost} UNITS"
         algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
         
         # Tính toán vị trí text
@@ -293,17 +297,21 @@ class GamePopup:
         
         # Title
         title_x = popup_center_x - len(congrat_text) * 4 - 40
-        title_y = self.popup_pos[1] + 50
+        title_y = self.popup_pos[1] + 30
         create_3d_text(screen, congrat_text, 20, title_x, title_y)
         
         # Info text
-        info_x = popup_center_x - len(info_text) * 4 - 20
-        info_y = self.popup_pos[1] + 100
-        create_3d_text(screen, info_text, 16, info_x, info_y)
+        info_x = popup_center_x - len(info_text_1) * 4 - 20
+        info_y = self.popup_pos[1] + 80
+        create_3d_text(screen, info_text_1, 16, info_x, info_y)
         
+        info_x_2 = popup_center_x - len(info_text_2) * 4 - 20
+        info_y_2 = self.popup_pos[1] + 100
+        create_3d_text(screen, info_text_2, 16, info_x_2, info_y_2)
+
         # Algorithm text
         algorithm_x = popup_center_x - len(algorithm_text) * 4
-        algorithm_y = self.popup_pos[1] + 130
+        algorithm_y = self.popup_pos[1] + 120
         create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
         
         # Vẽ buttons - sử dụng button images có sẵn
@@ -343,7 +351,8 @@ class GamePopup:
     def draw_final_win_1_popup(self, screen):
         """Vẽ final win 1 popup (giống win popup)"""
         congrat_text = f"CONGRATULATIONS!"
-        info_text = f"YOU WIN LEVEL {self.level} WITH {self.moves} MOVES"
+        info_text_1 = f"YOU WIN LEVEL {self.level}"
+        info_text_2 = f"WITH {self.moves} MOVES AND COST {self.cost} UNITS"
         algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
         
         # Tính toán vị trí text
@@ -351,17 +360,21 @@ class GamePopup:
         
         # Title
         title_x = popup_center_x - len(congrat_text) * 4 - 40
-        title_y = self.popup_pos[1] + 50
+        title_y = self.popup_pos[1] + 30
         create_3d_text(screen, congrat_text, 20, title_x, title_y)
         
         # Info text
-        info_x = popup_center_x - len(info_text) * 4 - 20
-        info_y = self.popup_pos[1] + 100
-        create_3d_text(screen, info_text, 16, info_x, info_y)
+        info_x = popup_center_x - len(info_text_1) * 4 - 20
+        info_y = self.popup_pos[1] + 80
+        create_3d_text(screen, info_text_2, 16, info_x, info_y)
         
+        info_x_2 = popup_center_x - len(info_text_2) * 4 - 20
+        info_y_2 = self.popup_pos[1] + 100
+        create_3d_text(screen, info_text_2, 16, info_x_2, info_y_2)
+
         # Algorithm text
         algorithm_x = popup_center_x - len(algorithm_text) * 4
-        algorithm_y = self.popup_pos[1] + 130
+        algorithm_y = self.popup_pos[1] + 120
         create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
         
         # Vẽ buttons
@@ -369,10 +382,9 @@ class GamePopup:
             screen.blit(button_data["image"], button_data["pos"])
     
     def draw_final_win_2_popup(self, screen):
-        """Vẽ final win 2 popup (level selection)"""
-        win_text = "Choose a level u want to play again"
+        win_text = "Select a level to start playing"
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        win_text_x = popup_center_x - len(win_text) * 4 - 30 #Chu 
+        win_text_x = popup_center_x - len(win_text) * 4 - 17 #Chu 
         win_text_y = self.popup_pos[1] + 20  # Di chuyển lên cao hơn (giảm từ 40 xuống 20)
         create_3d_text(screen, win_text, 20, win_text_x, win_text_y)
         
@@ -414,6 +426,7 @@ class DisplayManager:
             "algorithm": self.console.reSize_Image(DISPLAY_PATH + "algo_display.png"),
             "level": self.console.reSize_Image(DISPLAY_PATH + "level_display.png"),
             "moves": self.console.reSize_Image(DISPLAY_PATH + "moves_display.png"),
+            "costs": self.console.reSize_Image(DISPLAY_PATH + "level_display.png")
         }
     
     def setup_display_positions(self):
@@ -429,13 +442,19 @@ class DisplayManager:
                 "image": self.display_images["level"], 
                 "pos": (205, 175),
                 "text_pos": (222, 179),
-                "text": "LEVEL :  1"
+                "text": "LEVEL :  0"
             },
             "moves": {
                 "image": self.display_images["moves"],
                 "pos": (self.console.screen_size - 300, 175),
                 "text_pos": (self.console.screen_size - 286, 179),
                 "text": "MOVES :  0"
+            },
+            "costs": {
+                "image": self.display_images["costs"],
+                "pos": (self.console.screen_size - 190, 175),
+                "text_pos": (self.console.screen_size - 173, 179),
+                "text": "COSTS :  0"
             }
         }
     
