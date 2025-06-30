@@ -7,7 +7,7 @@ class GameUtils:
     def __init__(self, console):
         self.console = console
         self.selected_algorithm = None
-        self.current_level = 12
+        self.current_level = 0
         self.game_completed = False
         self.audio_muted = False  # Trạng thái âm thanh
 
