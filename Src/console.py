@@ -31,4 +31,4 @@ class Console:
         defs.SQUARE_SIZE_DEFAULT = int(defs.SQUARE_SIZE_DEFAULT * self.ratio_cordinate)
         for i in range(6):
             for j in range(6):
-                defs.MATRIX[i][j] = self.convertCoordinate((defs.MATRIX[i][j])[0], (defs.MATRIX[i][j])[1])
+                defs.MATRIX[i][j] = self.convertCoordinate((defs.MATRIX[i][j])[0], (defs.MATRIX[i][j])[1])            

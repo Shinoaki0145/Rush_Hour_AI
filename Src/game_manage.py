@@ -324,7 +324,7 @@ while running:
                             lv_started = True
                     else:
                         manage_car = game_utils.handle_button_action(clicked_button, manage_car)
-    
+
     if resetting and current_time - reset_timer >= RESET_DELAY:
         resetting = False
     
@@ -386,12 +386,14 @@ while running:
 
                     if game_utils.check_win_condition(manage_car):
                         current_algorithm = game_utils.get_selected_algorithm()
+                        game_utils.play_win_music()
                         
                         # Kiểm tra final win condition (level 12)
                         if game_utils.check_final_win_condition(manage_car):
                             game_popup.show_final_win_1_message(game_utils.get_current_level(), moves_count, cost, current_algorithm)
                         else:
                             game_popup.show_win_message(game_utils.get_current_level(), moves_count, cost, current_algorithm)
+
 
                         game_utils.set_game_completed(True)
     else:
