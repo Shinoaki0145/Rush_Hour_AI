@@ -33,7 +33,9 @@ class State:
         for i, car in enumerate(self.cars):
             for dir in [FORWARD, BACKWARD]:
                 if (dir == FORWARD and front_empty(m, car)) or (dir == BACKWARD and back_empty(m, car)):
-                    new_cars = [SimpleCar(c.name, c.length, c.coord, c.vertical) for c in self.cars]
+                    new_cars = self.cars.copy()
+                    old_car = self.cars[i]
+                    new_cars[i] = SimpleCar(old_car.name, old_car.length, old_car.coord, old_car.vertical)
                     y, x = new_cars[i].coord
                     if dir == FORWARD:
                         if new_cars[i].vertical:

@@ -308,12 +308,9 @@ while running:
                         cost,
                         step_timer,
                         is_moving,
-                        waiting_for_next_step,
-                        algorithm_running,
-                        algorithm_completed) = init_common_game_var()
+                        waiting_for_next_step) = init_common_game_var()
                         # Cập nhật display
                         display_manager.update_display_text("moves", "MOVES :  0")
-                        display_manager.update_display_text("costs", "COSTS :  0")
                         # Start reset timer
                         resetting = True
                         reset_timer = current_time
@@ -322,6 +319,12 @@ while running:
                         if not lv_started:
                             game_utils.handle_button_action(clicked_button, manage_car, game_popup)
                             lv_started = True
+                    elif clicked_button == "mute":
+                        game_utils.handle_button_action(clicked_button, manage_car)
+                        if game_utils.audio_muted:
+                            button_manager.update_button_icon("mute", BUTTON_PATH + "but_no_audio.png")
+                        else:
+                            button_manager.update_button_icon("mute", BUTTON_PATH + "but_audio.png")
                     else:
                         manage_car = game_utils.handle_button_action(clicked_button, manage_car)
 

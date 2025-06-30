@@ -13,9 +13,9 @@ class GameUtils:
 
         # đường dẫn đến các file âm thanh
         pygame.mixer.init()
-        self.bg_music_path = "Asset/Audio/bg_music.mp3"
-        self.win_music_path = "Asset/Audio/win_music.wav"
-        self.fail_music_path = "Asset/Audio/fail_music.wav"
+        self.bg_music_path = AUDIO_PATH + "bg_music.wav"
+        self.win_music_path = AUDIO_PATH + "win_music.wav"
+        self.fail_music_path = AUDIO_PATH + "fail_music.wav"
 
         pygame.mixer.music.load(self.bg_music_path)
         pygame.mixer.music.play(-1)  # Phát lặp vô hạn
