@@ -13,7 +13,7 @@ class GameUtils:
 
         # đường dẫn đến các file âm thanh
         pygame.mixer.init()
-        self.bg_music_path = AUDIO_PATH + "bg_music.mp3"
+        self.bg_music_path = AUDIO_PATH + "bg_music.wav"
         self.win_music_path = AUDIO_PATH + "win_music.wav"
         self.fail_music_path = AUDIO_PATH + "fail_music.wav"
 

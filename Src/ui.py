@@ -7,7 +7,6 @@ class GamePopup:
         self.visible = False
         self.popup_type = None  # "algorithm", "win", "lose", or "final_win"
         self.buttons = {}
-        self.selected_option = None
         self.setup_popup()
         
         # Win popup specific data
@@ -49,7 +48,6 @@ class GamePopup:
     def show_algorithm_selection(self):
         self.popup_type = "algorithm"
         self.visible = True
-        self.selected_option = None
         self.setup_algorithm_buttons()
 
     def show_win_message(self, level, moves, cost, algorithm="IDS"):
@@ -59,7 +57,6 @@ class GamePopup:
         self.moves = moves
         self.cost = cost
         self.algorithm = algorithm
-        self.selected_option = None
         self.setup_win_buttons()
         
     def show_lose_message(self, level, algorithm="IDS"):
@@ -67,7 +64,6 @@ class GamePopup:
         self.visible = True
         self.level = level
         self.algorithm = algorithm
-        self.selected_option = None
         self.setup_lose_buttons()
         
     def show_final_win_1_message(self, level, moves, cost, algorithm="IDS"):
@@ -78,14 +74,12 @@ class GamePopup:
         self.moves = moves
         self.cost = cost
         self.algorithm = algorithm
-        self.selected_option = None
         self.setup_final_win_1_buttons()
     
     def show_final_win_2_message(self):
         """Hiển thị final win popup thứ hai (level selection)"""
         self.popup_type = "final_win_2"
         self.visible = True
-        self.selected_option = None
         self.setup_final_win_2_buttons()
 
     def setup_algorithm_buttons(self):
@@ -405,8 +399,6 @@ class GamePopup:
         
         for button_name, button_data in self.buttons.items():
             if button_data["rect"].collidepoint(mouse_pos):
-                self.selected_option = button_name
-                
                 # KHÔNG tự động ẩn popup ở đây
                 # Để game_manage.py xử lý việc ẩn popup
                 

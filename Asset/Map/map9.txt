@@ -1,4 +1,4 @@
-0, 2
+0,2
 car,1,0,0,down
 car,3,0,0,down
 car,0,3,0,down
