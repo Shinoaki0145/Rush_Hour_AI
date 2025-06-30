@@ -5,7 +5,7 @@ class GamePopup:
     def __init__(self, console):
         self.console = console
         self.visible = False
-        self.popup_type = None  # "algorithm" or "win"
+        self.popup_type = None  # "algorithm", "win", "lose", or "final_win"
         self.buttons = {}
         self.selected_option = None
         self.setup_popup()
@@ -13,12 +13,26 @@ class GamePopup:
         # Win popup specific data
         self.level = 1
         self.moves = 0
-        self.algorithm = "IDS"
+        self.algorithm = ""
         
         # Load button images cho win popup
         self.win_button_images = {
             "reset_level": self.console.reSize_Image(BUTTON_PATH + "but_reset.png"),
             "next_level": self.console.reSize_Image(BUTTON_PATH + "but_play.png")
+        }
+        
+        # Load button images cho lose popup
+        self.lose_button_images = {
+            "reset_level": self.console.reSize_Image(BUTTON_PATH + "but_reset.png"),
+            "exit_level": self.console.reSize_Image(BUTTON_PATH + "but_exit.png")
+        }
+        
+        self.final_win_1_button_images = {
+            "exit_level": self.console.reSize_Image(BUTTON_PATH + "but_exit.png"),
+            "next_popup": self.console.reSize_Image(BUTTON_PATH + "but_play.png")  # Dùng play button cho "next"
+        }
+        self.final_win_2_button_images = {
+            "level_button": self.console.reSize_Image(BUTTON_PATH + "level_unlock.png"),
         }
     
     def setup_popup(self):
@@ -45,7 +59,32 @@ class GamePopup:
         self.algorithm = algorithm
         self.selected_option = None
         self.setup_win_buttons()
+        
+    def show_lose_message(self, level, algorithm="IDS"):
+        self.popup_type = "lose"
+        self.visible = True
+        self.level = level
+        self.algorithm = algorithm
+        self.selected_option = None
+        self.setup_lose_buttons()
+        
+    def show_final_win_1_message(self, level, moves, algorithm="IDS"):
+        """Hiển thị final win popup đầu tiên (giống win popup nhưng có exit và next)"""
+        self.popup_type = "final_win_1"
+        self.visible = True
+        self.level = level
+        self.moves = moves
+        self.algorithm = algorithm
+        self.selected_option = None
+        self.setup_final_win_1_buttons()
     
+    def show_final_win_2_message(self):
+        """Hiển thị final win popup thứ hai (level selection)"""
+        self.popup_type = "final_win_2"
+        self.visible = True
+        self.selected_option = None
+        self.setup_final_win_2_buttons()
+
     def setup_algorithm_buttons(self):
         self.buttons = {}
 
@@ -106,6 +145,105 @@ class GamePopup:
             "pos": next_pos,
             "rect": pygame.Rect(next_pos[0], next_pos[1], next_button_width, next_button_image.get_height()),
         }
+
+    def setup_lose_buttons(self):
+        self.buttons = {}
+
+        reset_button_image = self.lose_button_images["reset_level"]
+        exit_button_image = self.lose_button_images["exit_level"]
+
+        # Tính toán vị trí cho 2 buttons
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + 40
+        
+        spacing_x = 30
+        
+        reset_button_width = reset_button_image.get_width()
+        exit_button_width = exit_button_image.get_width()
+        
+        reset_pos = (popup_center_x - reset_button_width - spacing_x//2, popup_center_y)
+        exit_pos = (popup_center_x + spacing_x//2, popup_center_y)
+        
+        self.buttons["reset"] = {
+            "image": reset_button_image,
+            "pos": reset_pos,
+            "rect": pygame.Rect(reset_pos[0], reset_pos[1], reset_button_width, reset_button_image.get_height()),
+        }
+
+        self.buttons["exit"] = {
+            "image": exit_button_image,
+            "pos": exit_pos,
+            "rect": pygame.Rect(exit_pos[0], exit_pos[1], exit_button_width, exit_button_image.get_height()),
+        }
+        
+    def setup_final_win_1_buttons(self):
+        """Setup buttons cho final_win_1 popup"""
+        self.buttons = {}
+
+        exit_button_image = self.final_win_1_button_images["exit_level"]
+        next_button_image = self.final_win_1_button_images["next_popup"]
+        
+        # Tính toán vị trí cho 2 buttons (giống như win popup)
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + 40
+        
+        spacing_x = 30
+        
+        exit_button_width = exit_button_image.get_width()
+        next_button_width = next_button_image.get_width()
+        
+        exit_pos = (popup_center_x - exit_button_width - spacing_x//2, popup_center_y)
+        next_pos = (popup_center_x + spacing_x//2, popup_center_y)
+        
+        self.buttons["exit"] = {
+            "image": exit_button_image,
+            "pos": exit_pos,
+            "rect": pygame.Rect(exit_pos[0], exit_pos[1], exit_button_width, exit_button_image.get_height()),
+        }
+        
+        self.buttons["next_popup"] = {
+            "image": next_button_image,
+            "pos": next_pos,
+            "rect": pygame.Rect(next_pos[0], next_pos[1], next_button_width, next_button_image.get_height()),
+        }
+        
+    def setup_final_win_2_buttons(self):
+        """Setup buttons cho final_win_2 popup (level selection - 3 dòng × 4 cột)"""
+        self.buttons = {}
+
+        level_button_image = self.final_win_2_button_images["level_button"]
+        button_width = level_button_image.get_width()
+        button_height = level_button_image.get_height()
+
+        # Calculate positions for 12 level buttons (3 rows × 4 columns)
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
+        spacing_x = 15  # Giảm khoảng cách ngang để vừa 4 cột
+        spacing_y = 15  # Giảm khoảng cách dọc để vừa 3 dòng
+
+        # Tính toán vị trí bắt đầu để căn giữa grid 3×4
+        total_width = 4 * button_width + 3 * spacing_x
+        total_height = 3 * button_height + 2 * spacing_y
+        
+        start_x = popup_center_x - total_width // 2
+        start_y = popup_center_y - total_height // 2
+
+        for i in range(12):
+            row = i // 4  # Chia cho 4 để có 3 dòng
+            col = i % 4   # Chia lấy dư cho 4 để có 4 cột
+            
+            level_pos = (
+                start_x + col * (button_width + spacing_x),
+                start_y + row * (button_height + spacing_y)
+            )
+            
+            level_name = str(i + 1)
+            self.buttons[f"level_{level_name}"] = {
+                "image": level_button_image,
+                "pos": level_pos,
+                "rect": pygame.Rect(level_pos[0], level_pos[1], button_width, button_height),
+                "text": level_name
+            }
     
     def hide(self):
         """Ẩn popup"""
@@ -124,6 +262,12 @@ class GamePopup:
             self.draw_algorithm_popup(screen)
         elif self.popup_type == "win":
             self.draw_win_popup(screen)
+        elif self.popup_type == "lose":
+            self.draw_lose_popup(screen)
+        elif self.popup_type == "final_win_1":
+            self.draw_final_win_1_popup(screen)
+        elif self.popup_type == "final_win_2":
+            self.draw_final_win_2_popup(screen)
     
     def draw_algorithm_popup(self, screen):
         """Vẽ algorithm selection popup"""
@@ -167,6 +311,81 @@ class GamePopup:
             # Vẽ button image
             screen.blit(button_data["image"], button_data["pos"])
     
+    def draw_lose_popup(self, screen):
+        """Vẽ lose message popup"""
+        congrat_text = f"YOU LOST!"
+        info_text = f"YOU FAILED LEVEL {self.level}"
+        algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
+        
+        # Tính toán vị trí text
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        
+        # Title
+        title_x = popup_center_x - len(congrat_text) * 4 - 20
+        title_y = self.popup_pos[1] + 50
+        create_3d_text(screen, congrat_text, 20, title_x, title_y)
+        
+        # Info text
+        info_x = popup_center_x - len(info_text) * 4 - 20
+        info_y = self.popup_pos[1] + 100
+        create_3d_text(screen, info_text, 16, info_x, info_y)
+        
+        # Algorithm text
+        algorithm_x = popup_center_x - len(algorithm_text) * 4
+        algorithm_y = self.popup_pos[1] + 130
+        create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
+        
+        # Vẽ buttons - sử dụng button images có sẵn
+        for button_name, button_data in self.buttons.items():
+            # Vẽ button image
+            screen.blit(button_data["image"], button_data["pos"])
+    
+    def draw_final_win_1_popup(self, screen):
+        """Vẽ final win 1 popup (giống win popup)"""
+        congrat_text = f"CONGRATULATIONS!"
+        info_text = f"YOU WIN LEVEL {self.level} WITH {self.moves} MOVES"
+        algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
+        
+        # Tính toán vị trí text
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        
+        # Title
+        title_x = popup_center_x - len(congrat_text) * 4 - 40
+        title_y = self.popup_pos[1] + 50
+        create_3d_text(screen, congrat_text, 20, title_x, title_y)
+        
+        # Info text
+        info_x = popup_center_x - len(info_text) * 4 - 20
+        info_y = self.popup_pos[1] + 100
+        create_3d_text(screen, info_text, 16, info_x, info_y)
+        
+        # Algorithm text
+        algorithm_x = popup_center_x - len(algorithm_text) * 4
+        algorithm_y = self.popup_pos[1] + 130
+        create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
+        
+        # Vẽ buttons
+        for button_name, button_data in self.buttons.items():
+            screen.blit(button_data["image"], button_data["pos"])
+    
+    def draw_final_win_2_popup(self, screen):
+        """Vẽ final win 2 popup (level selection)"""
+        win_text = "Choose a level u want to play again"
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        win_text_x = popup_center_x - len(win_text) * 4 - 30 #Chu 
+        win_text_y = self.popup_pos[1] + 20  # Di chuyển lên cao hơn (giảm từ 40 xuống 20)
+        create_3d_text(screen, win_text, 20, win_text_x, win_text_y)
+        
+        # Vẽ level buttons (3 dòng × 4 cột), điều chỉnh vị trí y của nút
+        for button_name, button_data in self.buttons.items():
+            # Tăng vị trí y của nút để tránh đè lên chữ (ví dụ: +20)
+            adjusted_pos = (button_data["pos"][0], button_data["pos"][1] + 20)
+            screen.blit(button_data["image"], adjusted_pos)
+            level_text = button_data["text"]
+            text_x = adjusted_pos[0] + button_data["image"].get_width() // 2 - len(level_text) * 4
+            text_y = adjusted_pos[1] + button_data["image"].get_height() // 2 - 15
+            create_3d_text(screen, level_text, 20, text_x, text_y)
+
     def check_button_click(self, mouse_pos):
         """Kiểm tra click vào buttons"""
         if not self.visible:
@@ -204,7 +423,7 @@ class DisplayManager:
                 "image": self.display_images["algorithm"],
                 "pos": (self.console.screen_size // 2 - 85, 175),
                 "text_pos": (self.console.screen_size // 2 - 55, 179),
-                "text": "ALGORITHM :  IDS"
+                "text": "ALGORITHM :  "
             },
             "level": {
                 "image": self.display_images["level"], 
