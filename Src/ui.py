@@ -1,5 +1,7 @@
 import pygame
 from defs import *
+from manage_car import *
+from car import *
 
 class GamePopup:
     def __init__(self, console):
@@ -35,6 +37,16 @@ class GamePopup:
             "level_button": self.console.reSize_Image(BUTTON_PATH + "level_unlock.png"),
         }
     
+        self.info_in_game = {
+            "play_button": self.console.reSize_Smaller_Image(BUTTON_PATH + "but_play.png"),
+            "pause_button": self.console.reSize_Smaller_Image(BUTTON_PATH + "but_pause.png"),
+            "exit_button": self.console.reSize_Smaller_Image(BUTTON_PATH + "but_exit.png"),
+            "back_button": self.console.reSize_Smaller_Image(BUTTON_PATH + "but_back.png")
+        }
+
+        self.info_menu = {
+            "back_button": self.console.reSize_Smaller_Image(BUTTON_PATH + "but_back.png")
+        }
     def setup_popup(self):
         """Setup popup background"""
         self.popup_bg = self.console.reSize_Image(DISPLAY_PATH + "msg_display.png")
@@ -50,7 +62,7 @@ class GamePopup:
         self.visible = True
         self.setup_algorithm_buttons()
 
-    def show_win_message(self, level, moves, cost, algorithm="IDS"):
+    def show_win_message(self, level, moves, cost, algorithm="DFS"):
         self.popup_type = "win"
         self.visible = True
         self.level = level
@@ -59,14 +71,14 @@ class GamePopup:
         self.algorithm = algorithm
         self.setup_win_buttons()
         
-    def show_lose_message(self, level, algorithm="IDS"):
+    def show_lose_message(self, level, algorithm="DFS"):
         self.popup_type = "lose"
         self.visible = True
         self.level = level
         self.algorithm = algorithm
         self.setup_lose_buttons()
         
-    def show_final_win_1_message(self, level, moves, cost, algorithm="IDS"):
+    def show_final_win_1_message(self, level, moves, cost, algorithm="DFS"):
         """Hiển thị final win popup đầu tiên (giống win popup nhưng có exit và next)"""
         self.popup_type = "final_win_1"
         self.visible = True
@@ -82,12 +94,26 @@ class GamePopup:
         self.visible = True
         self.setup_final_win_2_buttons()
 
+    def show_info_in_game(self):
+        """Hiển thị thông tin các nút trên màn hình"""
+        self.popup_type = "info_buttons"
+        self.visible = True
+        self.selected_option = None
+        self.setup_info_in_game()
+
+    def show_info_menu(self):
+        """Hiển thị thông tin các thông tin thành viên trên màn hình"""
+        self.popup_type = "info_menu"
+        self.visible = True
+        self.selected_option = None
+        self.setup_info_menu()
+
     def setup_algorithm_buttons(self):
         self.buttons = {}
 
         button_image = self.console.reSize_Image(BUTTON_PATH + "but_start.png")
         
-        algorithms = ["BFS", "IDS", "A STAR", "UCS"]
+        algorithms = ["BFS", "DFS", "A STAR", "UCS"]
         button_width = button_image.get_width()
         button_height = button_image.get_height()
         
@@ -100,7 +126,7 @@ class GamePopup:
         
         positions = [
             (popup_center_x - button_width - spacing_x//2, popup_center_y - button_height - spacing_y//2),  # BFS
-            (popup_center_x + spacing_x//2, popup_center_y - button_height - spacing_y//2),  # IDS
+            (popup_center_x + spacing_x//2, popup_center_y - button_height - spacing_y//2),  # DFS
             (popup_center_x - button_width - spacing_x//2, popup_center_y + spacing_y//2),  # A STAR
             (popup_center_x + spacing_x//2, popup_center_y + spacing_y//2)   # UCS
         ]
@@ -241,7 +267,72 @@ class GamePopup:
                 "rect": pygame.Rect(level_pos[0], level_pos[1], button_width, button_height),
                 "text": level_name
             }
+    def setup_info_in_game(self):
+        self.buttons = {}
+
+        play_button_image = self.info_in_game["play_button"]
+        pause_button_image = self.info_in_game["pause_button"]
+        exit_button_image = self.info_in_game["exit_button"]
+        back_button_image = self.info_in_game["back_button"]
+
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
+
+        button_image = self.console.reSize_Image(BUTTON_PATH + "but_start.png")
+
+        play_button_width = play_button_image.get_width()
+
+        spacing_x = 100
+        spacing_y = 20
+        spacing_line = 70
+
+        play_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y)
+
+        self.buttons["play_button"] = {
+            "image": play_button_image,
+            "pos": play_pos,
+            "rect": pygame.Rect(play_pos[0], play_pos[1], play_button_width, play_button_image.get_height()),
+        }
+
+        pause_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + spacing_line)
+
+        self.buttons["pause_button"] = {
+            "image": pause_button_image,
+            "pos": pause_pos,
+            "rect": pygame.Rect(pause_pos[0], pause_pos[1], play_button_width, play_button_image.get_height()),
+        }
+
+        exit_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + 2 * spacing_line)
+
+        self.buttons["exit_button"] = {
+            "image": exit_button_image,
+            "pos": exit_pos,
+            "rect": pygame.Rect(exit_pos[0], exit_pos[1], play_button_width, play_button_image.get_height()),
+        }
+
+        back_pos = (popup_center_x - play_button_width -  spacing_x + 300, popup_center_y - play_button_width - 110)
+
+        self.buttons["back_button"] = {
+            "image": back_button_image,
+            "pos": back_pos,
+            "rect": pygame.Rect(back_pos[0], back_pos[1], play_button_width, play_button_image.get_height()),
+        }
+
     
+    def setup_info_menu(self):
+        self.buttons = {}
+        back_button_image = self.info_in_game["back_button"]
+        popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
+        back_button_width = back_button_image.get_width()
+        back_pos = (popup_center_x - back_button_width -  100 + 300, popup_center_y - back_button_width - 110)
+
+        self.buttons["back_button"] = {
+            "image": back_button_image,
+            "pos": back_pos,
+            "rect": pygame.Rect(back_pos[0], back_pos[1], back_button_width, back_button_image.get_height()),
+        }
+
     def hide(self):
         """Ẩn popup"""
         self.visible = False
@@ -265,6 +356,10 @@ class GamePopup:
             self.draw_final_win_1_popup(screen)
         elif self.popup_type == "final_win_2":
             self.draw_final_win_2_popup(screen)
+        elif self.popup_type == "info_buttons":
+            self.draw_info_in_game(screen)
+        elif self.popup_type == "info_menu":
+            self.draw_info_menu(screen)
     
     def draw_algorithm_popup(self, screen):
         """Vẽ algorithm selection popup"""
@@ -360,7 +455,7 @@ class GamePopup:
         # Info text
         info_x = popup_center_x - len(info_text_1) * 4 - 20
         info_y = self.popup_pos[1] + 80
-        create_3d_text(screen, info_text_2, 16, info_x, info_y)
+        create_3d_text(screen, info_text_1, 16, info_x, info_y)
         
         info_x_2 = popup_center_x - len(info_text_2) * 4 - 20
         info_y_2 = self.popup_pos[1] + 100
@@ -391,6 +486,33 @@ class GamePopup:
             text_x = adjusted_pos[0] + button_data["image"].get_width() // 2 - len(level_text) * 4
             text_y = adjusted_pos[1] + button_data["image"].get_height() // 2 - 15
             create_3d_text(screen, level_text, 20, text_x, text_y)
+    def draw_info_in_game(self, screen):
+        """Vẽ info popup"""
+        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 135
+        title_y = self.popup_pos[1] + 15
+        create_3d_text(screen, "INFO BUTTON IN GAME", 24, title_x, title_y)
+
+        create_3d_text(screen, "Press play to choose Algorithm", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 80)
+        create_3d_text(screen, "Press pause to pause game and", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 140)
+        create_3d_text(screen, "press again to continue", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
+        create_3d_text(screen, "Press exit to out game", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 220)
+
+        for button_name, button_data in self.buttons.items():
+            screen.blit(button_data["image"], button_data["pos"])
+    
+    def draw_info_menu(self, screen):
+        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 110
+        title_y = self.popup_pos[1] + 15
+        create_3d_text(screen, "RUSH HOUR", 40, title_x, title_y)
+
+        create_3d_text(screen, "GROUP 4", 25, title_x + 60, title_y + 50)
+        create_3d_text(screen, "Tran Hoai Thien Nhan", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 120)
+        create_3d_text(screen, "Tran Tri Nhan", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
+        create_3d_text(screen, "Nguyen An Nghiep", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 200)
+        create_3d_text(screen, "Cao Tran Ba Dat", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 240)
+
+        for button_name, button_data in self.buttons.items():
+            screen.blit(button_data["image"], button_data["pos"])
 
     def check_button_click(self, mouse_pos):
         """Kiểm tra click vào buttons"""
@@ -445,7 +567,7 @@ class DisplayManager:
             "costs": {
                 "image": self.display_images["costs"],
                 "pos": (self.console.screen_size - 190, 175),
-                "text_pos": (self.console.screen_size - 173, 179),
+                "text_pos": (self.console.screen_size - 177, 179),
                 "text": "COSTS :  0"
             }
         }
@@ -569,3 +691,59 @@ def create_3d_text(screen, text, size, x, y):
     # Vẽ chữ chính
     main_surface = font.render(text, True, WHITE)
     screen.blit(main_surface, (x, y))
+
+class Menu_Display():
+    def __init__(self, console):
+        self.console = console
+
+class ButtonMenu(ButtonManager):
+    def load_button_images(self):
+        """Load tất cả button images"""
+        self.button_images = {
+            "info": self.console.reSize_Bigger_Image(BUTTON_PATH + "but_info.png"),
+            "mute": self.console.reSize_Bigger_Image(BUTTON_PATH + "but_no_audio.png"),
+            "play": self.console.reSize_Bigger_Image(BUTTON_PATH + "but_play.png"),
+            "exit": self.console.reSize_Bigger_Image(BUTTON_PATH + "but_exit.png")
+        }
+    
+    def setup_button_positions(self):
+        """Setup vị trí của các button"""
+        self.button_positions = {
+            "play": (self.console.screen_size // 5 - self.button_images["play"].get_width() // 2, self.console.screen_size // 3 * 2 - self.button_images["play"].get_height() // 2),
+            "info": (self.console.screen_size // 5 * 2 - self.button_images["info"].get_width() // 2, self.console.screen_size // 3 * 2 - self.button_images["play"].get_height() // 2),
+            "mute": (self.console.screen_size // 5 * 3 - self.button_images["mute"].get_width() // 2, self.console.screen_size // 3 * 2 - self.button_images["play"].get_height() // 2),
+            "exit": (self.console.screen_size // 5 * 4 - self.button_images["exit"].get_width() // 2, self.console.screen_size // 3 * 2 - self.button_images["play"].get_height() // 2),
+        }
+        
+        # Tạo button objects với thông tin đầy đủ
+        for name, pos in self.button_positions.items():
+            image = self.button_images[name]
+            self.buttons[name] = {
+                "image": image,
+                "pos": pos,
+                "rect": pygame.Rect(pos[0], pos[1], image.get_width(), image.get_height())
+            }
+
+class DisplayMenu:
+    def __init__(self, console, button_menu, board, flag):
+        self.console = console
+        self.button_menu = button_menu
+        self.bg_img = board
+        self.flag = flag
+        self.setup_menu()
+    
+    def setup_menu(self):
+        self.manage_car = ManageCar()
+        car1 = Car("car_target", 0, 2, self.console.reSize_Image("Asset/Car/car_target.png"), True, "right")
+        car2 = Car("car_1", 3, 3, self.console.reSize_Image("Asset/Car/car_0.png"), False, "down")
+        car3 = Car("car_2", 4, 0, self.console.reSize_Image("Asset/Car/truck_1.png"), False, "down")
+        car4 = Car("car_3", 4, 4, self.console.reSize_Image("Asset/Car/car_2.png"), True, "right")
+        self.manage_car.add_car(car1)
+        self.manage_car.add_car(car2)
+        self.manage_car.add_car(car3)
+        self.manage_car.add_car(car4)
+    
+    def draw_menu(self, surface):
+        surface.blit(self.bg_img, (0, 0))
+        self.manage_car.draw_all(surface)
+        self.button_menu.draw_all_buttons(surface)
