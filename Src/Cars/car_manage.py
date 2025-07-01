@@ -1,5 +1,5 @@
 import pygame
-import car
+import Cars.car
 from defs import *
 
 class ManageCar:

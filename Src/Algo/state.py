@@ -1,4 +1,4 @@
-from car import SimpleCar
+from Cars import SimpleCar
 
 FORWARD = 1
 BACKWARD = -1

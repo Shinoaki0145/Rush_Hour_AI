@@ -1,6 +1,5 @@
 import pygame
-import car
-from manage_car import *
+from Cars import *
 from defs import *
 
 class GameUtils:
@@ -24,9 +23,10 @@ class GameUtils:
         Check xem chuột có click vào button nào không
         Trả về tên button nếu có click, None nếu không
         """
-        for button_name, button_data in button_manager.buttons.items():
-            if button_data["rect"].collidepoint(mouse_pos):
-                return button_name
+        for button_name, button_data in button_manager.__dict__.items():
+            if button_name in ['info', 'mute', 'pause', 'reset', 'play', 'exit']:
+                if button_data.button["rect"].collidepoint(mouse_pos):
+                    return button_data.name
         return None
     
     def handle_button_action(self, button_name, manage_car, game_popup=None):
@@ -105,20 +105,22 @@ class GameUtils:
         """
         if action == "next_popup":
             # Chuyển sang final_win_2 popup
+            # game_popup.finalwin2.show()
+            # game_popup.update(True, "final_win_2")
             game_popup.show_final_win_2_message()
         elif action == "exit":
             # Thoát game
             self.exit_game()
         return manage_car
 
-    def handle_final_win_2_popup_action(self, action, manage_car, game_popup, load_map_func):
+    def handle_final_win_2_popup_action(self, action, manage_car, game_popup, console, load_map_func):
         """
         Xử lý action từ final win 2 popup (code cũ)
         """
         if action.startswith("level_"):
             level = int(action.replace("level_", ""))
             map_name = f"map{level}"
-            manage_car = load_map_func(map_name)
+            manage_car = load_map_func(console, map_name)
             self.current_level = level
             self.selected_algorithm = None
             game_popup.hide()
@@ -163,7 +165,9 @@ class GameUtils:
     def play_game(self, game_popup=None):
         """Hiển thị popup để chọn algorithm"""
         if game_popup:
-            game_popup.show_algorithm_selection()  # CẬP NHẬT: Chỉ show popup, không chờ return
+            # game_popup.show_algorithm_selection()  # CẬP NHẬT: Chỉ show popup, không chờ return
+            # game_popup.update(True, "algorithm")
+            game_popup.show_algorithm_selection()
     
     def pause_game(self, manage_car):
         """Dừng tất cả cars"""
