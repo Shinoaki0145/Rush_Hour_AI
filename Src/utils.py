@@ -17,8 +17,7 @@ class GameUtils:
         self.win_music_path = AUDIO_PATH + "win_music.wav"
         self.fail_music_path = AUDIO_PATH + "fail_music.wav"
 
-        pygame.mixer.music.load(self.bg_music_path)
-        pygame.mixer.music.play(-1)  # Phát lặp vô hạn
+        self.play_bg_music()
     
     def check_button_click(self, mouse_pos, button_manager):
         """
@@ -46,9 +45,17 @@ class GameUtils:
         elif button_name == "mute":
             return self.toggle_mute()
         elif button_name == "info":
-            return self.show_info()
+            return self.show_info(game_popup)
         return manage_car  # Trả về manage_car không thay đổi nếu không có action
-    
+
+    def handle_button_action_menu(self, button_game, game_popup = None):
+        if button_game == "play":
+            return self.play_game(game_popup)
+        elif button_game == "mute":
+            return self.toggle_mute()
+        elif button_game == "info":
+            return self.show_info_menu(game_popup)
+        
     def handle_algorithm_selection(self, algorithm):
         """
         Xử lý khi người chơi chọn algorithm
@@ -119,6 +126,14 @@ class GameUtils:
         elif action == "exit":
             self.exit_game()
         return manage_car
+    
+    def handle_info_in_game_popup_action(self, action, game_popup):
+        if action == "back_button":
+            game_popup.hide()
+
+    def handle_info_in_game_popup_action(self, action, game_popup):
+        if action == "back_button":
+            game_popup.hide()
 
     def get_selected_algorithm(self):
         """Lấy algorithm hiện tại được chọn"""
@@ -157,12 +172,10 @@ class GameUtils:
     
     # Xử lý âm thanh
     def play_win_music(self):
-        pygame.mixer.music.load(self.win_music_path)
-        pygame.mixer.music.play()
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound(self.win_music_path))
 
     def play_fail_music(self):
-        pygame.mixer.music.load(self.fail_music_path)
-        pygame.mixer.music.play()
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound(self.fail_music_path))
 
     def play_bg_music(self):
         pygame.mixer.music.load(self.bg_music_path)
@@ -177,10 +190,15 @@ class GameUtils:
             pygame.mixer.music.set_volume(1)
         return True
     
-    def show_info(self):
+    def show_info(self, game_popup=None):
+        """Hiển thị thông tin các nút"""
+        if game_popup:
+            game_popup.show_info_in_game()
+
+    def show_info_menu(self, game_popup=None):
         """Hiển thị thông tin game"""
-        self.console.show_info()
-        return True
+        if game_popup:
+            game_popup.show_info_menu()
     
     def handle_keyboard_input(self, key, manage_car):
         """

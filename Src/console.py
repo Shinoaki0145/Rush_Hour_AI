@@ -27,6 +27,20 @@ class Console:
         image = pygame.transform.scale(image, (width, height))
         return image
     
+    def reSize_Smaller_Image(self, path):
+        image = pygame.image.load(path).convert_alpha()
+        width = int(image.get_width() * self.ratio_x * 0.75)
+        height = int(image.get_height() * self.ratio_y * 0.75)
+        image = pygame.transform.scale(image, (width, height))
+        return image
+    
+    def reSize_Bigger_Image(self, path):
+        image = pygame.image.load(path).convert_alpha()
+        width = int(image.get_width() * self.ratio_x * 1.25)
+        height = int(image.get_height() * self.ratio_y * 1.25)
+        image = pygame.transform.scale(image, (width, height))
+        return image
+    
     def convertMatrix(self):
         defs.SQUARE_SIZE_DEFAULT = int(defs.SQUARE_SIZE_DEFAULT * self.ratio_cordinate)
         for i in range(6):
