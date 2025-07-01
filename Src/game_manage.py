@@ -343,6 +343,12 @@ while running:
                                 button_manager.update_button_icon("mute", BUTTON_PATH + "but_audio.png")
                         elif clicked_button == "info":
                             game_utils.handle_button_action(clicked_button, manage_car, game_popup)
+                        elif clicked_button == "pause":
+                            game_utils.handle_button_action(clicked_button, manage_car, game_popup)
+                            if game_utils.game_pause:
+                                button_manager.update_button_icon("pause", BUTTON_PATH + "but_next.png")
+                            else:
+                                button_manager.update_button_icon("pause", BUTTON_PATH + "but_pause.png")
                         else:
                             manage_car = game_utils.handle_button_action(clicked_button, manage_car)
             else:
@@ -352,8 +358,14 @@ while running:
                         # game_utils.handle_button_action_menu(clicked_button, game_popup)
                         game_popup.show_final_win_2_message()  # Hiển thị popup chọn level
                         flag_menu = False
-                    if clicked_button == "info":
+                    elif clicked_button == "info":
                         game_utils.handle_button_action_menu(clicked_button, game_popup)
+                    elif clicked_button == "mute":
+                        game_utils.handle_button_action_menu(clicked_button, manage_car)
+                        if game_utils.audio_muted:
+                            button_menu.update_button_icon("mute", BUTTON_PATH + "but_no_audio.png")
+                        else:
+                            button_menu.update_button_icon("mute", BUTTON_PATH + "but_audio.png")
                     elif clicked_button == "exit":
                         running = False
     
@@ -377,7 +389,7 @@ while running:
         screen.blit(board.image, (board.offset_x, board.offset_y))
         
         # THAY ĐỔI: Chỉ thực hiện algorithm execution khi game đã được khởi tạo
-        if (game_initialized and not resetting and searched and path and not game_popup.visible and algorithm_completed):
+        if (game_initialized and not resetting and searched and path and not game_popup.visible and algorithm_completed and not game_utils.game_pause):
             # Kiểm tra xem có xe nào đang di chuyển không
             cars_moving = manage_car.update_car()
             if not cars_moving:  # Không có xe nào đang di chuyển

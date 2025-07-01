@@ -10,6 +10,7 @@ class GameUtils:
         self.current_level = 0
         self.game_completed = False
         self.audio_muted = False  # Trạng thái âm thanh
+        self.game_pause = False
 
         # đường dẫn đến các file âm thanh
         pygame.mixer.init()
@@ -40,8 +41,9 @@ class GameUtils:
             return self.exit_game()
         elif button_name == "play":
             return self.play_game(game_popup)
-        elif button_name == "stop":
-            return self.pause_game(manage_car)
+        elif button_name == "pause":
+            self.game_pause = not self.game_pause
+            return
         elif button_name == "mute":
             return self.toggle_mute()
         elif button_name == "info":
@@ -165,10 +167,9 @@ class GameUtils:
         if game_popup:
             game_popup.show_algorithm_selection()  # CẬP NHẬT: Chỉ show popup, không chờ return
     
-    def pause_game(self, manage_car):
-        """Dừng tất cả cars"""
-        manage_car.pause_all_cars()
-        return manage_car
+    # def pause_game(self, manage_car):
+    #     """Dừng tất cả cars"""
+    #     return manage_car
     
     # Xử lý âm thanh
     def play_win_music(self):
