@@ -23,3 +23,8 @@ class ButtonPause(ButtonBase):
         
     def draw(self, screen):
         screen.blit(self.button["image"], self.button["pos"])
+
+    def update_icon(self, new_image_path):
+        # Cập nhật icon cho nút
+        new_image = self.console.reSize_Image(new_image_path)
+        self.button["image"] = new_image

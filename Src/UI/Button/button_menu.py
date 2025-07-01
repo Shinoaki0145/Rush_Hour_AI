@@ -17,7 +17,7 @@ class ButtonMenu():
     def load_button_images(self):
         """Load tất cả button images"""
         self.info.button_image = self.console.reSize_Bigger_Image(BUTTON_PATH + "but_info.png")
-        self.mute.button_image = self.console.reSize_Bigger_Image(BUTTON_PATH + "but_no_audio.png")
+        self.mute.button_image = self.console.reSize_Bigger_Image(BUTTON_PATH + "but_audio.png")
         self.play.button_image = self.console.reSize_Bigger_Image(BUTTON_PATH + "but_play.png")
         self.exit.button_image = self.console.reSize_Bigger_Image(BUTTON_PATH + "but_exit.png")
 
@@ -39,3 +39,7 @@ class ButtonMenu():
         self.mute.draw(screen)
         self.play.draw(screen)
         self.exit.draw(screen)
+
+    def update_mute_icon(self, new_image_path):
+        new_image = self.console.reSize_Bigger_Image(new_image_path)
+        self.mute.button["image"] = new_image

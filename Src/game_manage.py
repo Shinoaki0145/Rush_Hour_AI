@@ -350,8 +350,15 @@ class Game():
                                         self.button_manager.mute.update_icon(BUTTON_PATH + "but_audio.png")
                                 elif clicked_button == "info":
                                     self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
+                                elif clicked_button == "pause":
+                                    self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
+                                    if self.game_utils.game_pause:
+                                        self.button_manager.pause.update_icon(BUTTON_PATH + "but_next.png")
+                                    else:
+                                        self.button_manager.pause.update_icon(BUTTON_PATH + "but_pause.png")
                                 else:
                                     self.car_manager = self.game_utils.handle_button_action(clicked_button, self.car_manager)
+                    
                     else:
                         clicked_button = self.game_utils.check_button_click(mouse_pos, self.button_menu)
                         if clicked_button:
@@ -359,8 +366,14 @@ class Game():
                                 # game_utils.handle_button_action_menu(clicked_button, game_popup)
                                 self.game_popup.show_final_win_2_message()  # Hiển thị popup chọn level
                                 self.flag_menu = False
-                            if clicked_button == "info":
+                            elif clicked_button == "info":
                                 self.game_utils.handle_button_action_menu(clicked_button, self.game_popup)
+                            elif clicked_button == "mute":
+                                self.game_utils.handle_button_action_menu(clicked_button, self.car_manager)
+                                if self.game_utils.audio_muted:
+                                    self.button_menu.update_mute_icon(BUTTON_PATH + "but_no_audio.png")
+                                else:
+                                    self.button_menu.update_mute_icon(BUTTON_PATH + "but_audio.png")   
                             elif clicked_button == "exit":
                                 running = False
             
@@ -369,8 +382,9 @@ class Game():
                     resetting = False
                 
                 # THAY ĐỔI: Chỉ chạy algorithm khi game đã được khởi tạoself.
-                if (game_initialized and lv_started and not self.searched and not self.algorithm_running and not self.algorithm_completed 
-                    and self.game_utils.has_selected_algorithm() and not self.game_popup.visible):
+                if (game_initialized and lv_started and not self.searched and 
+                    not self.algorithm_running and not self.algorithm_completed and 
+                    self.game_utils.has_selected_algorithm() and not self.game_popup.visible):
                     
                     print("Starting algorithm search in background thread...")
                     self.algorithm_running = True
@@ -384,7 +398,10 @@ class Game():
                 self.screen.blit(self.board.image, (self.board.offset_x, self.board.offset_y))
                 
                 # THAY ĐỔI: Chỉ thực hiện algorithm execution khi game đã được khởi tạo
-                if (game_initialized and not resetting and self.searched and self.path and not self.game_popup.visible and self.algorithm_completed):
+                if (game_initialized and not resetting 
+                    and self.searched and self.path 
+                    and not self.game_popup.visible and self.algorithm_completed
+                    and not self.game_utils.game_pause):
                     # Kiểm tra xem có xe nào đang di chuyển không
                     cars_moving = self.car_manager.update_car()
                     if not cars_moving:  # Không có xe nào đang di chuyển
