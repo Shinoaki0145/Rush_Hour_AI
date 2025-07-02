@@ -470,9 +470,9 @@ class GamePopup:
 
         create_3d_text(screen, "GROUP 4", 25, title_x + 60, title_y + 50)
         create_3d_text(screen, "TRAN HOAI THIEN NHAN", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 120)
-        create_3d_text(screen, "TTRAN TRI NHAN", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
-        create_3d_text(screen, "NNGUYEN AN NGHIEP", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 200)
-        create_3d_text(screen, "CCAO TRAN BA DAT", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 240)
+        create_3d_text(screen, "TRAN TRI NHAN", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
+        create_3d_text(screen, "NGUYEN AN NGHIEP", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 200)
+        create_3d_text(screen, "CAO TRAN BA DAT", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 240)
 
         for button_name, button_data in self.buttons.items():
             screen.blit(button_data["image"], button_data["pos"])
