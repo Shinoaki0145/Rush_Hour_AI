@@ -455,10 +455,10 @@ class GamePopup:
         title_y = self.popup_pos[1] + 15
         create_3d_text(screen, "INFO BUTTON IN GAME", 24, title_x, title_y)
 
-        create_3d_text(screen, "PRESS PLAY TO CHOOSE ALGORITHM", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 80)
-        create_3d_text(screen, "PRESS PAUSE", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 140)
-        create_3d_text(screen, "PRESS AGAIN TO CONTINUE", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
-        create_3d_text(screen, "PRESS EXIT TO OUT GAME", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 220)
+        create_3d_text(screen, "Press Play to choose algorithm", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 80)
+        create_3d_text(screen, "Press Pause to pause the game", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 140)
+        create_3d_text(screen, "Press Again to continue", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
+        create_3d_text(screen, "Press Exit to out game", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 220)
 
         for button_name, button_data in self.buttons.items():
             screen.blit(button_data["image"], button_data["pos"])
