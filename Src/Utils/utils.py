@@ -8,10 +8,9 @@ class GameUtils:
         self.selected_algorithm = None
         self.current_level = 0
         self.game_completed = False
-        self.audio_muted = False  # Trạng thái âm thanh
+        self.audio_muted = False
         self.game_pause = False
 
-        # đường dẫn đến các file âm thanh
         pygame.mixer.init()
         self.bg_music_path = AUDIO_PATH + "bg_music.wav"
         self.win_music_path = AUDIO_PATH + "win_music.wav"
@@ -20,23 +19,15 @@ class GameUtils:
         self.play_bg_music()
     
     def check_button_click(self, mouse_pos, button_manager):
-        """
-        Check xem chuột có click vào button nào không
-        Trả về tên button nếu có click, None nếu không
-        """
         for button_name, button_data in button_manager.__dict__.items():
             if button_name in ['info', 'mute', 'pause', 'reset', 'play', 'exit']:
                 if button_data.button["rect"].collidepoint(mouse_pos):
                     return button_data.name
         return None
     
-    def handle_button_action(self, button_name, manage_car, game_popup=None):
-        """
-        Xử lý action của button dựa trên tên button
-        game_popup: GamePopup object
-        """
+    def handle_button_action(self, button_name, car_manager, game_popup=None):
         if button_name == "reset":
-            return self.reset_game(manage_car)
+            return self.reset_game(car_manager)
         elif button_name == "exit":
             return self.exit_game()
         elif button_name == "play":
@@ -47,7 +38,7 @@ class GameUtils:
             return self.toggle_mute()
         elif button_name == "info":
             return self.show_info(game_popup)
-        return manage_car  # Trả về manage_car không thay đổi nếu không có action
+        return car_manager  # Trả về car_manager không thay đổi nếu không có action
 
     def handle_button_action_menu(self, button_game, game_popup = None):
         if button_game == "play":
@@ -58,26 +49,16 @@ class GameUtils:
             return self.show_info_menu(game_popup)
         
     def handle_algorithm_selection(self, algorithm):
-        """
-        Xử lý khi người chơi chọn algorithm
-        """
         self.selected_algorithm = algorithm
-        print(f"GameUtils: Selected algorithm changed to: {algorithm}")
-        
-        # Reset game completed flag
         self.game_completed = False
 
-    def reset_game(self, manage_car):
-        return manage_car
+    def reset_game(self, car_manager):
+        return car_manager
     
     def handle_win_popup_action(self, action, game_popup):
-        """
-        Xử lý action từ win popup
-        """
         game_popup.hide()
         self.game_completed = False
         if action == "next_level":
-            # Chuyển sang level tiếp theo
             self.current_level += 1
             self.selected_algorithm = None
             return True
@@ -85,50 +66,39 @@ class GameUtils:
             return False
     
     def handle_lose_popup_action(self, action, game_popup):
-        """
-        Xử lý action từ lose popup - thiết kế tương tự handle_win_popup_action
-        """
         game_popup.hide()
         self.game_completed = False
         
         if action == "reset":
-            # Reset lại level hiện tại và reset thuật toán
-            self.selected_algorithm = None  # Reset thuật toán
-            return True  # Trả về True để báo hiệu cần reload map
+            self.selected_algorithm = None
+            return True
         elif action == "exit":
-            # Thoát game
             self.exit_game()
         return False
     
-    def handle_final_win_1_popup_action(self, action, manage_car, game_popup):
-        """
-        Xử lý action từ final win 1 popup
-        """
+    def handle_final_win_popup_action(self, action, car_manager, game_popup):
         if action == "next_popup":
-            # Chuyển sang final_win_2 popup
-            # game_popup.finalwin2.show()
-            # game_popup.update(True, "final_win_2")
-            game_popup.show_final_win_2_message()
+            game_popup.hide()
+            self.current_level = 0
+            self.selected_algorithm = None
+            self.game_completed = False
+            return "return_to_menu"
         elif action == "exit":
-            # Thoát game
             self.exit_game()
-        return manage_car
+        return car_manager
 
-    def handle_final_win_2_popup_action(self, action, manage_car, game_popup, console, load_map_func):
-        """
-        Xử lý action từ final win 2 popup (code cũ)
-        """
+    def handle_choose_level_popup_action(self, action, car_manager, game_popup, console, load_map_func):
         if action.startswith("level_"):
             level = int(action.replace("level_", ""))
             map_name = f"map{level}"
-            manage_car = load_map_func(console, map_name)
+            car_manager = load_map_func(console, map_name)
             self.current_level = level
             self.selected_algorithm = None
             game_popup.hide()
             self.game_completed = False
         elif action == "exit":
             self.exit_game()
-        return manage_car
+        return car_manager
     
     def handle_info_in_game_popup_action(self, action, game_popup):
         if action == "back_button":
@@ -139,32 +109,25 @@ class GameUtils:
             game_popup.hide()
 
     def get_selected_algorithm(self):
-        """Lấy algorithm hiện tại được chọn"""
         return self.selected_algorithm
     
     def has_selected_algorithm(self):
-        """Kiểm tra xem đã chọn thuật toán chưa"""
         return self.selected_algorithm is not None
     
     def get_current_level(self):
-        """Lấy level hiện tại"""
         return self.current_level
     
     def set_game_completed(self, completed=True):
-        """Set trạng thái game completed"""
         self.game_completed = completed
     
     def is_game_completed(self):
-        """Kiểm tra xem game đã hoàn thành chưa"""
         return self.game_completed
         
     def exit_game(self):
-        """Thoát game"""
         pygame.quit()
         exit()
             
     def play_game(self, game_popup=None):
-        """Hiển thị popup để chọn algorithm"""
         if game_popup:
             # game_popup.show_algorithm_selection()  # CẬP NHẬT: Chỉ show popup, không chờ return
             # game_popup.update(True, "algorithm")
@@ -186,7 +149,6 @@ class GameUtils:
         pygame.mixer.music.play(-1)
 
     def toggle_mute(self):
-        """Bật/tắt âm thanh"""
         self.audio_muted = not self.audio_muted
         if self.audio_muted:
             pygame.mixer.music.set_volume(0)
@@ -195,30 +157,22 @@ class GameUtils:
         return True
     
     def show_info(self, game_popup=None):
-        """Hiển thị thông tin các nút"""
         if game_popup:
             game_popup.show_info_in_game()
 
     def show_info_menu(self, game_popup=None):
-        """Hiển thị thông tin game"""
         if game_popup:
             game_popup.show_info_menu()
     
-    def handle_keyboard_input(self, key, manage_car):
-        """
-        Xử lý input từ bàn phím
-        """
+    def handle_keyboard_input(self, key, car_manager):
         if key == pygame.K_RIGHT:
-            manage_car.move_car("main_car", "right")
+            car_manager.move_car("main_car", "right")
         elif key == pygame.K_LEFT:
-            manage_car.move_car("main_car", "left")
-        return manage_car
+            car_manager.move_car("main_car", "left")
+        return car_manager
     
-    def check_win_condition(self, manage_car):
-        """
-        Kiểm tra điều kiện thắng game
-        """
-        target_car = manage_car.cars["target_car"]
+    def check_win_condition(self, car_manager):
+        target_car = car_manager.cars["target_car"]
         if target_car and target_car.is_at_exit():
             return True
         return False
@@ -226,13 +180,9 @@ class GameUtils:
     def check_lose_condition(self, path=None, algorithm_completed=False):
         if algorithm_completed and (path is None or len(path) == 0):
             return True
-        
         return False
     
-    def check_final_win_condition(self, manage_car):
-        """
-        Kiểm tra điều kiện final win (hoàn thành level 12)
-        """
-        if self.current_level == 12 and self.check_win_condition(manage_car):
+    def check_final_win_condition(self, car_manager):
+        if self.current_level == 12 and self.check_win_condition(car_manager):
             return True
         return False

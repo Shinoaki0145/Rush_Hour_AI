@@ -39,11 +39,8 @@ DISPLAY_PATH = ASSET_PATH + "Display/"
 FONT_PATH = ASSET_PATH + "Font/"
 HIGHLIGHT_PATH = ASSET_PATH + "Highlight/car_highlight.png"
 AUDIO_PATH = ASSET_PATH + "Audio/"
-
 TARGET_CAR_PATH = CAR_PATH + "car_target.png"
-
 BACKGROUND_PATH = ASSET_PATH + "Background/bg_game.jpg"
-
 FONT = ASSET_PATH + "Font/FredokaOne-Regular.ttf"
 
 def clear_valid_matrix():
