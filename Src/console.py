@@ -3,8 +3,6 @@ import defs
 
 class Console:
     def __init__(self):
-        
-        # Lấy thông tin màn hình
         display_info = pygame.display.Info()
         #screen_width = display_info.current_w
         screen_height = display_info.current_h
