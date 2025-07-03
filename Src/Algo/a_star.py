@@ -9,7 +9,7 @@ def heuristic(car, m):
     for i in range(start_x, 6):
         if m[car.coord[0]][i]:
             no_block_cars += 1
-    return abs(car.coord[1] - 4)
+    return abs(car.coord[1] - 4) + no_block_cars
 
 def a_star(start):
     frontier = PriorityQueue()
