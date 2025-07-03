@@ -1,8 +1,9 @@
 from UI.ui import *
 
-class PopupBase():
+class PopupBase:
     def __init__(self, console):
         self.console = console
+        self.visible = False
         self.setup_popup()
     
     def setup_popup(self):

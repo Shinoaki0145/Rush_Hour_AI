@@ -7,22 +7,18 @@ from UI.Display.display_manage import DisplayManager
 from UI.Display.display_menu import DisplayMenu
 from UI.Button.button_manage import ButtonManager
 from UI.Button.button_menu import ButtonMenu
-# from UI.Popup.popup_manage import GamePopup
-from ui import GamePopup
+from UI.Popup.popup_manage import GamePopup
 from UI import create_3d_text
-from Utils import *
+from utils import *
 from Algo import *
 from random import choice
 from time import time
 import tracemalloc, gc
 import threading
 
-def init_common_game_var():
-    return (False, [], 1, 0, 0, 0, False, False, False, False)
-
 def load_map(console, map_name):
     clear_valid_matrix()
-    new_car_manager = ManageCar()
+    new_car_manager = CarManager()
     map_path = ASSET_PATH + "Map/" + map_name + ".txt"
     with open(map_path) as f:
         target_car_x, target_car_y = list(map(int, f.readline().strip().split(',')))
@@ -47,7 +43,7 @@ def load_map(console, map_name):
             car_count += 1
     return new_car_manager
 
-class Game():
+class Game:
     def __init__(self):
         pygame.init()
         self.console = console.Console()
@@ -58,7 +54,6 @@ class Game():
         pygame.display.set_caption('Rush Hour') 
         self.board = Board(self.console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
-        # Initialize UI and Utils
         self.button_manager = ButtonManager(self.console)
         self.display_manager = DisplayManager(self.console)
         self.game_popup = GamePopup(self.console)
@@ -68,25 +63,24 @@ class Game():
         self.button_menu = ButtonMenu(self.console)
         self.display_menu = DisplayMenu(self.console, self.button_menu, self.board.image, self.flag_menu)
 
-        # THAY ĐỔI: Khởi tạo với level 1 nhưng sẽ được thay đổi khi người chơi chọn
         self.map_name = "map1"  # Default map
         self.car_manager = load_map(self.console, self.map_name)
 
-        # THAY ĐỔI: Không cập nhật level display ngay lập tức vì người chơi chưa chọn
-        # display_manager.update_display_text("level", f"LEVEL :  {game_utils.get_current_level()}")
-
         # Initialize game logic
-        (self.searched,
-        self.path,
-        self.current_step,
-        self.moves_count,
-        self.cost,
-        self.step_timer,
-        self.is_moving,
-        self.waiting_for_next_step,
-        self.algorithm_running,
-        self.algorithm_completed) = init_common_game_var()
+        self.init_common_game_var()
     
+    def init_common_game_var(self):
+        self.searched = False
+        self.path = []
+        self.current_step = 1
+        self.moves_count = 0
+        self.cost = 0
+        self.step_timer = 0
+        self.is_moving = False
+        self.waiting_for_next_step = False
+        self.algorithm_running = False
+        self.algorithm_completed = False
+
     def on_algorithm_complete(self, result_path, algorithm_name):
         """Callback khi thuật toán hoàn thành"""
         self.algorithm_running = False
@@ -96,15 +90,13 @@ class Game():
             print(f"No solution found with {algorithm_name}")
             current_algorithm = self.game_utils.get_selected_algorithm()
             self.game_utils.play_fail_music()
-            # self.game_popup.lose.show(self.game_utils.get_current_level(), current_algorithm)
-            # self.game_popup.update(True, "lose")
-            self.game_popup.show_lose_message(self.game_utils.get_current_level(), current_algorithm)
+            self.game_popup.lose.show(self.game_utils.get_current_level(), current_algorithm)
+            self.game_popup.update_type("lose")
         else:
             print(f"Found path with {len(result_path)} states using {algorithm_name}")
             self.path = result_path
             self.searched = True
             self.current_step = 1
-            # QUAN TRỌNG: Reset step_timer khi bắt đầu execution
             self.step_timer = 0
     
     def run_algorithm_search(self, cars, selected_algo, callback):
@@ -113,18 +105,15 @@ class Game():
             try:
                 print(f"Starting search with algorithm: {selected_algo}")
                 
-                # Setup search
                 simple_cars = []
                 for car in cars:
                     simple_cars.append(SimpleCar(car.name, car.length_grid, (car.y, car.x), not car.is_horizontal))
                 start = State(simple_cars)
 
-                # Measure performance
                 gc.collect()
                 tracemalloc.start()
                 begin = time()
                 
-                # Run algorithm
                 if selected_algo == "BFS":
                     self.path = bfs(start)
                 elif selected_algo == "DFS":
@@ -143,14 +132,12 @@ class Game():
                 print(f"Time taken: {time_taken} seconds.")
                 print(f"Memory peaked: {memory_used} MB.")
                 
-                # Callback với kết quả
                 callback(self.path, selected_algo)
                 
             except Exception as e:
                 print(f"Error in algorithm search: {e}")
                 callback(None, selected_algo)
         
-        # Chạy trong thread riêng
         search_thread = threading.Thread(target=search_thread, daemon=True)
         search_thread.start()
     
@@ -158,7 +145,7 @@ class Game():
         lv_started = False
         resetting = False
         reset_timer = 0
-        game_initialized = False  # THÊM: Flag để theo dõi xem game đã được khởi tạo chưa
+        game_initialized = False
         
         running = True  
         while running:  
@@ -168,11 +155,10 @@ class Game():
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
-                    # Kiểm tra click vào popup trước
-                    if not self.flag_menu:
-                        if self.game_popup.visible:
-                            clicked_popup_button = self.game_popup.check_button_click(mouse_pos)
-                            if clicked_popup_button:
+                    if self.game_popup.visible:
+                        clicked_popup_button = self.game_popup.check_button_click(mouse_pos)
+                        if clicked_popup_button:
+                            if not self.flag_menu:
                                 if self.game_popup.popup_type == "algorithm":
                                     self.game_utils.handle_algorithm_selection(clicked_popup_button)
                                     
@@ -181,16 +167,7 @@ class Game():
                                     
                                     self.game_popup.hide()
                                     
-                                    (self.searched,
-                                    self.path,
-                                    self.current_step,
-                                    self.moves_count,
-                                    self.cost,
-                                    self.step_timer,
-                                    self.is_moving,
-                                    self.waiting_for_next_step,
-                                    self.algorithm_running,
-                                    self.algorithm_completed) = init_common_game_var()
+                                    self.init_common_game_var()
                                     
                                 elif self.game_popup.popup_type == "win":
                                     next_lv = self.game_utils.handle_win_popup_action(clicked_popup_button, self.game_popup)
@@ -204,17 +181,7 @@ class Game():
                                     self.car_manager = load_map(self.console, self.map_name)
                                     lv_started = False
                                     self.display_manager.algo.update_text("ALGORITHM :  ")
-                                    
-                                    (self.searched,
-                                    self.path,
-                                    self.current_step,
-                                    self.moves_count,
-                                    self.cost,
-                                    self.step_timer,
-                                    self.is_moving,
-                                    self.waiting_for_next_step,
-                                    self.algorithm_running,
-                                    self.algorithm_completed) = init_common_game_var()
+                                    self.init_common_game_var()
 
                                 elif self.game_popup.popup_type == "lose":    
                                     reset_level = self.game_utils.handle_lose_popup_action(clicked_popup_button, self.game_popup)
@@ -227,18 +194,9 @@ class Game():
                                         self.car_manager = load_map(self.console, self.map_name)
                                     lv_started = False
 
-                                    (self.searched,
-                                    self.path,
-                                    self.current_step,
-                                    self.moves_count,
-                                    self.cost,
-                                    self.step_timer,
-                                    self.is_moving,
-                                    self.waiting_for_next_step,
-                                    self.algorithm_running,
-                                    self.algorithm_completed) = init_common_game_var()
+                                    self.init_common_game_var()
                                     
-                                elif game_popup.popup_type == "final_win":
+                                elif self.game_popup.popup_type == "final_win":
                                     result = self.game_utils.handle_final_win_popup_action(
                                         clicked_popup_button, 
                                         self.car_manager, 
@@ -248,17 +206,8 @@ class Game():
                                     if result == "return_to_menu":
                                         self.flag_menu = True
                                         game_initialized = False
-
-                                        (self.searched,
-                                        self.path,
-                                        self.current_step,
-                                        self.moves_count,
-                                        self.cost,
-                                        self.step_timer,
-                                        self.is_moving,
-                                        self.waiting_for_next_step,
-                                        self.algorithm_running,
-                                        self.algorithm_completed) = init_common_game_var()
+                                        
+                                        self.init_common_game_var()
                                         
                                         lv_started = False
                                         resetting = False
@@ -270,43 +219,32 @@ class Game():
                                     else:
                                         self.car_manager = result
 
-                                elif game_popup.popup_type == "choose_level":
-                                    self.car_manager = game_utils.handle_choose_level_popup_action(
+                                elif self.game_popup.popup_type == "choose_level":
+                                    self.car_manager = self.game_utils.handle_choose_level_popup_action(
                                         clicked_popup_button, 
                                         self.car_manager, 
-                                        game_popup,
+                                        self.game_popup,
                                         self.console, 
                                         load_map
                                     )
                                     
-                                    self.map_name = "map" + str(game_utils.get_current_level())
-                                    self.display_manager.level.update_text(f"LEVEL :  {game_utils.get_current_level()}")
+                                    self.map_name = "map" + str(self.game_utils.get_current_level())
+                                    self.display_manager.level.update_text(f"LEVEL :  {self.game_utils.get_current_level()}")
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
                                     self.display_manager.algo.update_text("ALGORITHM :  ")
                                     
-                                    (self.searched,
-                                        self.path,
-                                        self.current_step,
-                                        self.moves_count,
-                                        self.cost,
-                                        self.step_timer,
-                                        self.is_moving,
-                                        self.waiting_for_next_step,
-                                        self.algorithm_running,
-                                        self.algorithm_completed) = init_common_game_var()
+                                    self.init_common_game_var()
                                     
                                     lv_started = False
                                     game_initialized = True
+                                    
                                 elif self.game_popup.popup_type == "info_buttons":
                                     self.game_utils.handle_info_in_game_popup_action(clicked_popup_button, self.game_popup)
-                                        
-                            continue
-                    else:
-                        clicked_popup_button = self.game_popup.check_button_click(mouse_pos)
-                        if (self.game_popup.visible and clicked_button and 
-                            self.game_popup.popup_type == "info_menu"):
-                            self.game_utils.handle_info_in_game_popup_action(clicked_popup_button, self.game_popup)
+                            else:
+                                if self.game_popup.popup_type == "info_menu":
+                                    self.game_utils.handle_info_in_game_popup_action(clicked_popup_button, self.game_popup)
+                        continue      
 
                     if not self.flag_menu:    
                         if game_initialized:
@@ -315,44 +253,35 @@ class Game():
                                 if clicked_button == "exit":
                                     running = False
                                     self.game_utils.handle_button_action(clicked_button, self.car_manager)
+
                                 elif clicked_button == "reset":
                                     current_map_name = "map" + str(self.game_utils.get_current_level())
                                     self.car_manager = self.game_utils.handle_button_action(clicked_button, load_map(self.console, current_map_name))
                                     
-                                    (self.searched,
-                                    self.path,
-                                    self.current_step,
-                                    self.moves_count,
-                                    self.cost,
-                                    self.step_timer,
-                                    self.is_moving,
-                                    self.waiting_for_next_step,
-                                    self.algorithm_running,
-                                    self.algorithm_completed) = init_common_game_var()
+                                    self.init_common_game_var()
                                     
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
                                     
                                     resetting = True
                                     reset_timer = current_time
+
                                 elif clicked_button == "play":
                                     if not lv_started:
                                         self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
                                         lv_started = True
+
                                 elif clicked_button == "mute":
                                     self.game_utils.handle_button_action(clicked_button, self.car_manager)
-                                    if self.game_utils.audio_muted:
-                                        self.button_manager.mute.update_icon(BUTTON_PATH + "but_no_audio.png")
-                                    else:
-                                        self.button_manager.mute.update_icon(BUTTON_PATH + "but_audio.png")
+                                    self.button_manager.is_muted = not self.button_manager.is_muted
+
                                 elif clicked_button == "info":
                                     self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
+                                
                                 elif clicked_button == "pause":
                                     self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
-                                    if self.game_utils.game_pause:
-                                        self.button_manager.pause.update_icon(BUTTON_PATH + "but_next.png")
-                                    else:
-                                        self.button_manager.pause.update_icon(BUTTON_PATH + "but_pause.png")
+                                    self.button_manager.is_paused = not self.button_manager.is_paused
+
                                 else:
                                     self.car_manager = self.game_utils.handle_button_action(clicked_button, self.car_manager)
                     
@@ -360,16 +289,18 @@ class Game():
                         clicked_button = self.game_utils.check_button_click(mouse_pos, self.button_menu)
                         if clicked_button:
                             if clicked_button == "play":
-                                self.game_popup.choose_lvl.show()
+                                self.game_popup.choose_lv.show()
+                                self.game_popup.update_type("choose_level")
                                 self.flag_menu = False
+
                             elif clicked_button == "info":
                                 self.game_utils.handle_button_action_menu(clicked_button, self.game_popup)
+
                             elif clicked_button == "mute":
-                                self.game_utils.handle_button_action_menu(clicked_button, self.car_manager)
-                                if self.game_utils.audio_muted:
-                                    self.button_menu.update_mute_icon(BUTTON_PATH + "but_no_audio.png")
-                                else:
-                                    self.button_menu.update_mute_icon(BUTTON_PATH + "but_audio.png")   
+                                self.game_utils.handle_button_action_menu(clicked_button)
+                                self.button_menu.is_muted = not self.button_menu.is_muted
+                                self.button_manager.is_muted = not self.button_manager.is_muted
+
                             elif clicked_button == "exit":
                                 running = False
             
@@ -403,7 +334,6 @@ class Game():
                                 self.current_step += 1
                         else:
                             if self.current_step < len(self.path):
-                                
                                 if self.step_timer == 0:
                                     self.step_timer = current_time
                                 
@@ -412,8 +342,8 @@ class Game():
                                         self.car_manager.cars[car.name].y, self.car_manager.cars[car.name].x = car.coord
                                 
                                 self.moves_count += 1
-                                
                                 self.display_manager.moves.update_text(f"MOVES :  {self.moves_count}")
+                                
                                 if(self.game_utils.get_selected_algorithm() in ["A STAR", "UCS"]):
                                     self.display_manager.costs.update_text(f"COSTS :  {self.path[self.current_step].cost}")
                                     self.cost = self.path[self.current_step].cost
@@ -433,14 +363,11 @@ class Game():
                                     self.game_utils.play_win_music()
                                     
                                     if self.game_utils.check_final_win_condition(self.car_manager):
-                                        # self.game_popup.finalwin1.show(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
-                                        # self.game_popup.update(True, "final_win_1")
-                                        self.game_popup.show_final_win_message(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
+                                        self.game_popup.final_win.show(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
+                                        self.game_popup.update_type("final_win")
                                     else:
-                                        # self.game_popup.win.show(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
-                                        # self.game_popup.update(True, "win")
-                                        self.game_popup.show_win_message(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
-
+                                        self.game_popup.win.show(self.game_utils.get_current_level(), self.moves_count, self.cost, current_algorithm)
+                                        self.game_popup.update_type("win")
 
                                     self.game_utils.set_game_completed(True)
                 else:

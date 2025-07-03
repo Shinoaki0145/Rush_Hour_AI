@@ -1,16 +1,16 @@
 from .button_base import *
 
-class ButtonMute(ButtonBase):
+class ButtonNext(ButtonBase):
     def __init__(self, console):
         super().__init__(console)
-        self.name = "mute"
+        self.name = "next"
 
     def load_img(self):
-        self.button_image = self.console.reSize_Image(BUTTON_PATH + "but_mute.png")
+        self.button_image = self.console.reSize_Image(BUTTON_PATH + "but_next.png")
 
     def setup_pos(self):
-        self.button_pos = (110, 10)
-        
+        self.button_pos = (self.console.screen_size - self.button_image.get_width() - 310, 10)
+    
     def update_img(self):
         self.button = {
             "image": self.button_image,

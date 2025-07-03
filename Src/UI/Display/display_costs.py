@@ -1,6 +1,6 @@
 from .display_base import *
 
-class DisplayCost(DisplayBase):
+class DisplayCosts(DisplayBase):
     def __init__(self, console):
         super().__init__(console)
 
@@ -16,12 +16,9 @@ class DisplayCost(DisplayBase):
             }
 
     def draw(self, screen):
-        # Vẽ hình ảnh display
         screen.blit(self.display["image"], self.display["pos"])
-        # Vẽ text lên display
         if self.display["text"]:
             super().draw_text_on_display(screen, self.display["text"], self.display["text_pos"])
 
     def update_text(self, text):
         self.display["text"] = text
-        print(f"DisplayManager: Updated costs to: {text}")  # Debug line 

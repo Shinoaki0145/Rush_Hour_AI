@@ -7,6 +7,7 @@ class PopupAlgo(PopupBase):
         self.buttons = {}
         
     def show(self):
+        self.visible = True
         self.setup()
         
     def setup(self):
@@ -17,7 +18,6 @@ class PopupAlgo(PopupBase):
         button_width = button_image.get_width()
         button_height = button_image.get_height()
         
-        # Tính toán vị trí buttons (2x2 grid)
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
         popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
         
@@ -40,7 +40,6 @@ class PopupAlgo(PopupBase):
             }
             
     def draw(self, screen):
-        """Vẽ algorithm selection popup"""
         title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 120
         title_y = self.popup_pos[1] + 50
         create_3d_text(screen, "CHOOSE ALGORITHM", 24, title_x, title_y)
@@ -53,7 +52,10 @@ class PopupAlgo(PopupBase):
             create_3d_text(screen, algorithm, 16, text_x, text_y)
 
     def check_button_click(self, mouse_pos):
+        if not self.visible:
+            return None
+        
         for button_name, button_data in self.buttons.items():
-            if button_data["rect"].collidepoint(mouse_pos):
+            if button_data["rect"].collidepoint(mouse_pos):        
                 return button_name
         return None

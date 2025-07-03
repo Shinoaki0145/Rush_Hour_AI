@@ -19,10 +19,10 @@ class GameUtils:
         self.play_bg_music()
     
     def check_button_click(self, mouse_pos, button_manager):
+        button_names = ['info', 'mute', 'sound', 'pause', 'next', 'reset', 'play', 'exit']
         for button_name, button_data in button_manager.__dict__.items():
-            if button_name in ['info', 'mute', 'pause', 'reset', 'play', 'exit']:
-                if button_data.button["rect"].collidepoint(mouse_pos):
-                    return button_data.name
+            if button_name in button_names and button_data.button["rect"].collidepoint(mouse_pos):
+                return button_data.name
         return None
     
     def handle_button_action(self, button_name, car_manager, game_popup=None):
@@ -32,28 +32,23 @@ class GameUtils:
             return self.exit_game()
         elif button_name == "play":
             return self.play_game(game_popup)
-        elif button_name == "pause":
+        elif button_name in ["pause", "next"]:
             return self.pause_game()
-        elif button_name == "mute":
+        elif button_name in ["mute", "sound"]:
             return self.toggle_mute()
         elif button_name == "info":
             return self.show_info(game_popup)
         return car_manager  # Trả về car_manager không thay đổi nếu không có action
 
-    def handle_button_action_menu(self, button_game, game_popup = None):
-        if button_game == "play":
-            return self.play_game(game_popup)
-        elif button_game == "mute":
+    def handle_button_action_menu(self, button_name, game_popup=None):
+        if button_name in ["mute", "sound"]:
             return self.toggle_mute()
-        elif button_game == "info":
+        elif button_name == "info":
             return self.show_info_menu(game_popup)
         
     def handle_algorithm_selection(self, algorithm):
         self.selected_algorithm = algorithm
         self.game_completed = False
-
-    def reset_game(self, car_manager):
-        return car_manager
     
     def handle_win_popup_action(self, action, game_popup):
         game_popup.hide()
@@ -96,14 +91,8 @@ class GameUtils:
             self.selected_algorithm = None
             game_popup.hide()
             self.game_completed = False
-        elif action == "exit":
-            self.exit_game()
         return car_manager
     
-    def handle_info_in_game_popup_action(self, action, game_popup):
-        if action == "back_button":
-            game_popup.hide()
-
     def handle_info_in_game_popup_action(self, action, game_popup):
         if action == "back_button":
             game_popup.hide()
@@ -120,24 +109,21 @@ class GameUtils:
     def set_game_completed(self, completed=True):
         self.game_completed = completed
     
-    def is_game_completed(self):
-        return self.game_completed
-        
+    def reset_game(self, car_manager):
+        return car_manager
+    
     def exit_game(self):
         pygame.quit()
         exit()
             
     def play_game(self, game_popup=None):
         if game_popup:
-            # game_popup.show_algorithm_selection()  # CẬP NHẬT: Chỉ show popup, không chờ return
-            # game_popup.update(True, "algorithm")
-            game_popup.show_algorithm_selection()
+            game_popup.algo.show()
+            game_popup.update_type("algorithm")
     
     def pause_game(self):
-        """Dừng tất cả cars"""
         self.game_pause = not self.game_pause
     
-    # Xử lý âm thanh
     def play_win_music(self):
         pygame.mixer.Channel(0).play(pygame.mixer.Sound(self.win_music_path))
 
@@ -158,18 +144,13 @@ class GameUtils:
     
     def show_info(self, game_popup=None):
         if game_popup:
-            game_popup.show_info_in_game()
+            game_popup.info_ingame.show()
+            game_popup.update_type("info_buttons")
 
     def show_info_menu(self, game_popup=None):
         if game_popup:
-            game_popup.show_info_menu()
-    
-    def handle_keyboard_input(self, key, car_manager):
-        if key == pygame.K_RIGHT:
-            car_manager.move_car("main_car", "right")
-        elif key == pygame.K_LEFT:
-            car_manager.move_car("main_car", "left")
-        return car_manager
+            game_popup.info_menu.show()
+            game_popup.update_type("info_menu")
     
     def check_win_condition(self, car_manager):
         target_car = car_manager.cars["target_car"]

@@ -1,6 +1,6 @@
 from UI.ui import *
 
-class ButtonBase():
+class ButtonBase:
     def __init__(self, console):
         self.console = console
         self.button = {}

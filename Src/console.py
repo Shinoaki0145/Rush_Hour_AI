@@ -4,7 +4,6 @@ import defs
 class Console:
     def __init__(self):
         display_info = pygame.display.Info()
-        #screen_width = display_info.current_w
         screen_height = display_info.current_h
         screen_height = screen_height - defs.HEADER_BAR
 

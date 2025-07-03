@@ -1,12 +1,12 @@
-from .popup_base import  *
-import UI.Button.button_reset as br
+from .popup_base import *
+import UI.Button.button_exit as be
 import UI.Button.button_next as bn
 
-class PopupWin(PopupBase):
+class PopupFinalWin(PopupBase):
     def __init__(self, console):
         super().__init__(console)
-        self.reset = br.ButtonReset(console)
-        self.next_level = bn.ButtonNext(console)
+        self.exit = be.ButtonExit(console)
+        self.next_popup = bn.ButtonNext(console)
 
         self.level = 0
         self.moves = 0
@@ -27,18 +27,18 @@ class PopupWin(PopupBase):
         
         spacing_x = 30
         
-        reset_pos = (popup_center_x - self.reset.button_image.get_width() - spacing_x // 2, popup_center_y)
+        exit_pos = (popup_center_x - self.exit.button_image.get_width() - spacing_x //2 , popup_center_y)
         next_pos = (popup_center_x + spacing_x // 2, popup_center_y)
         
-        self.reset.button_pos = reset_pos
-        self.next_level.button_pos = next_pos
+        self.exit.button_pos = exit_pos
+        self.next_popup.button_pos = next_pos
 
-        self.reset.update_img()
-        self.next_level.update_img()
-        
+        self.exit.update_img()
+        self.next_popup.update_img()
+
     def draw(self, screen):
-        congrat_text = f"CONGRATULATIONS!"
-        info_text_1 = f"YOU WIN LEVEL {self.level}"
+        congrat_text = f"FANTASTIC BABY!"
+        info_text_1 = f"YOU WIN FINAL LEVEL {self.level}"
         info_text_2 = f"WITH {self.moves} MOVES AND COST {self.cost} UNITS"
         algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
         
@@ -60,15 +60,15 @@ class PopupWin(PopupBase):
         algorithm_y = self.popup_pos[1] + 120
         create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
         
-        self.reset.draw(screen)
-        self.next_level.draw(screen)
-    
+        self.exit.draw(screen)
+        self.next_popup.draw(screen)
+
     def check_button_click(self, mouse_pos):
         if not self.visible:
             return None
         
         for button_name, button_data in self.__dict__.items():
-            if (button_name in ['reset', 'next_level'] 
+            if (button_name in ['exit', 'next_popup'] 
                 and button_data.button["rect"].collidepoint(mouse_pos)):        
                 return button_name
         return None
