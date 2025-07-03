@@ -7,10 +7,10 @@ def dfs_recursive(state, explored):
     state_count += 1
     explored.add(state.to_tuple())
     for next_state in state.next_states():
-        # Kiểm tra goal: xe 0 đi ngang, ra tới cột 5
-        if next_state.cars[0].coord[1] + next_state.cars[0].length == 6:
-            return next_state
         if next_state.to_tuple() not in explored:
+            # Kiểm tra goal: xe 0 đi ngang, ra tới cột 5
+            if next_state.cars[0].coord[1] + next_state.cars[0].length == 6:
+                return next_state
             result = dfs_recursive(next_state, explored)
             if result:
                 return result
