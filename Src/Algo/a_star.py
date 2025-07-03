@@ -5,11 +5,11 @@ from itertools import count
 def heuristic(car, m):
     car_x = car.coord[1]
     start_x = car_x + car.length
-    no_block_cars = 0
+    num_block_cars = 0
     for i in range(start_x, 6):
         if m[car.coord[0]][i]:
-            no_block_cars += 1
-    return abs(car.coord[1] - 4) + no_block_cars
+            num_block_cars += 1
+    return abs(car.coord[1] - 4) + num_block_cars
 
 def a_star(start):
     frontier = PriorityQueue()
