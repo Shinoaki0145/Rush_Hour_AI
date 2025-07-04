@@ -1,6 +1,5 @@
 import pygame
-import car
-from manage_car import *
+from Cars import *
 from defs import *
 
 class GameUtils:
@@ -20,41 +19,36 @@ class GameUtils:
         self.play_bg_music()
     
     def check_button_click(self, mouse_pos, button_manager):
-        for button_name, button_data in button_manager.buttons.items():
-            if button_data["rect"].collidepoint(mouse_pos):
-                return button_name
+        button_names = ['info', 'mute', 'sound', 'pause', 'next', 'reset', 'play', 'exit']
+        for button_name, button_data in button_manager.__dict__.items():
+            if button_name in button_names and button_data.button["rect"].collidepoint(mouse_pos):
+                return button_data.name
         return None
     
-    def handle_button_action(self, button_name, manage_car, game_popup=None):
+    def handle_button_action(self, button_name, car_manager, game_popup=None):
         if button_name == "reset":
-            return self.reset_game(manage_car)
+            return self.reset_game(car_manager)
         elif button_name == "exit":
             return self.exit_game()
         elif button_name == "play":
             return self.play_game(game_popup)
-        elif button_name == "pause":
-            self.game_pause = not self.game_pause
-            return
-        elif button_name == "mute":
+        elif button_name in ["pause", "next"]:
+            return self.pause_game()
+        elif button_name in ["mute", "sound"]:
             return self.toggle_mute()
         elif button_name == "info":
             return self.show_info(game_popup)
-        return manage_car  # Trả về manage_car không thay đổi nếu không có action
+        return car_manager  # Trả về car_manager không thay đổi nếu không có action
 
-    def handle_button_action_menu(self, button_game, game_popup = None):
-        if button_game == "play":
-            return self.play_game(game_popup)
-        elif button_game == "mute":
+    def handle_button_action_menu(self, button_name, game_popup=None):
+        if button_name in ["mute", "sound"]:
             return self.toggle_mute()
-        elif button_game == "info":
+        elif button_name == "info":
             return self.show_info_menu(game_popup)
         
     def handle_algorithm_selection(self, algorithm):
         self.selected_algorithm = algorithm
         self.game_completed = False
-
-    def reset_game(self, manage_car):
-        return manage_car
     
     def handle_win_popup_action(self, action, game_popup):
         game_popup.hide()
@@ -77,7 +71,7 @@ class GameUtils:
             self.exit_game()
         return False
     
-    def handle_final_win_popup_action(self, action, manage_car, game_popup):
+    def handle_final_win_popup_action(self, action, car_manager, game_popup):
         if action == "next_popup":
             game_popup.hide()
             self.current_level = 0
@@ -86,25 +80,19 @@ class GameUtils:
             return "return_to_menu"
         elif action == "exit":
             self.exit_game()
-        return manage_car
+        return car_manager
 
-    def handle_choose_level_popup_action(self, action, manage_car, game_popup, load_map_func):
+    def handle_choose_level_popup_action(self, action, car_manager, game_popup, console, load_map_func):
         if action.startswith("level_"):
             level = int(action.replace("level_", ""))
             map_name = f"map{level}"
-            manage_car = load_map_func(map_name)
+            car_manager = load_map_func(console, map_name)
             self.current_level = level
             self.selected_algorithm = None
             game_popup.hide()
             self.game_completed = False
-        elif action == "exit":
-            self.exit_game()
-        return manage_car
+        return car_manager
     
-    def handle_info_in_game_popup_action(self, action, game_popup):
-        if action == "back_button":
-            game_popup.hide()
-
     def handle_info_in_game_popup_action(self, action, game_popup):
         if action == "back_button":
             game_popup.hide()
@@ -121,16 +109,20 @@ class GameUtils:
     def set_game_completed(self, completed=True):
         self.game_completed = completed
     
-    def is_game_completed(self):
-        return self.game_completed
-        
+    def reset_game(self, car_manager):
+        return car_manager
+    
     def exit_game(self):
         pygame.quit()
         exit()
             
     def play_game(self, game_popup=None):
         if game_popup:
-            game_popup.show_algorithm_selection()
+            game_popup.algo.show()
+            game_popup.update_type("algorithm")
+    
+    def pause_game(self):
+        self.game_pause = not self.game_pause
     
     def play_win_music(self):
         pygame.mixer.Channel(0).play(pygame.mixer.Sound(self.win_music_path))
@@ -152,21 +144,16 @@ class GameUtils:
     
     def show_info(self, game_popup=None):
         if game_popup:
-            game_popup.show_info_in_game()
+            game_popup.info_ingame.show()
+            game_popup.update_type("info_buttons")
 
     def show_info_menu(self, game_popup=None):
         if game_popup:
-            game_popup.show_info_menu()
+            game_popup.info_menu.show()
+            game_popup.update_type("info_menu")
     
-    def handle_keyboard_input(self, key, manage_car):
-        if key == pygame.K_RIGHT:
-            manage_car.move_car("main_car", "right")
-        elif key == pygame.K_LEFT:
-            manage_car.move_car("main_car", "left")
-        return manage_car
-    
-    def check_win_condition(self, manage_car):
-        target_car = manage_car.cars["target_car"]
+    def check_win_condition(self, car_manager):
+        target_car = car_manager.cars["target_car"]
         if target_car and target_car.is_at_exit():
             return True
         return False
@@ -176,7 +163,7 @@ class GameUtils:
             return True
         return False
     
-    def check_final_win_condition(self, manage_car):
-        if self.current_level == 12 and self.check_win_condition(manage_car):
+    def check_final_win_condition(self, car_manager):
+        if self.current_level == 12 and self.check_win_condition(car_manager):
             return True
         return False
