@@ -33,7 +33,7 @@ class PopupInfoInGame(PopupBase):
         play_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y)
         pause_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + spacing_line)
         exit_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + 2 * spacing_line)
-        back_pos = (popup_center_x - play_button_width + 180, popup_center_y - play_button_width + 130)
+        back_pos = (popup_center_x - play_button_width + 170, popup_center_y - play_button_width + 130)
 
         self.play_button.button_pos = play_pos
         self.pause_button.button_pos = pause_pos

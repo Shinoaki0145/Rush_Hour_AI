@@ -15,7 +15,7 @@ class PopupInfoMenu(PopupBase):
         popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
 
         back_button_width = self.back_button.button_image.get_width()
-        back_pos = (popup_center_x - back_button_width + 180, popup_center_y - back_button_width + 130)
+        back_pos = (popup_center_x - back_button_width + 170, popup_center_y - back_button_width + 130)
 
         self.back_button.button_pos = back_pos
         self.back_button.update_img()

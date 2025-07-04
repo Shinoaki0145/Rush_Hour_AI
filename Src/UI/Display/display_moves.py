@@ -11,7 +11,7 @@ class DisplayMoves(DisplayBase):
         self.display = {
                 "image": self.display_image,
                 "pos": (self.console.screen_size - 300, 175),
-                "text_pos": (self.console.screen_size - 286, 179),
+                "text_pos": (self.console.screen_size - 291, 179),
                 "text": "MOVES :  0"
             }
 

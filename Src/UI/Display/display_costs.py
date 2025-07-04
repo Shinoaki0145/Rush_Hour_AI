@@ -11,7 +11,7 @@ class DisplayCosts(DisplayBase):
         self.display = {
                 "image": self.display_image,
                 "pos": (self.console.screen_size - 190, 175),
-                "text_pos": (self.console.screen_size - 173, 179),
+                "text_pos": (self.console.screen_size - 177, 179),
                 "text": "COSTS :  0"
             }
 
