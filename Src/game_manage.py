@@ -51,7 +51,7 @@ class Game:
 
         self.screen = pygame.display.set_mode((self.console.screen_size, self.console.screen_size))
         self.clock = pygame.time.Clock()
-        pygame.display.set_caption('Rush Hour') 
+        pygame.display.set_caption('Rush Hour AI Game') 
         self.board = Board(self.console.reSize_Image(BACKGROUND_PATH), SQUARE_SIZE_DEFAULT, 0, 0)
 
         self.button_manager = ButtonManager(self.console)
@@ -381,17 +381,19 @@ class Game:
                 
                 if self.algorithm_running:
                     loading_text = "COMPUTING SOLUTION..."
-                    text_x = self.console.screen_size // 2 - len(loading_text) * 8 + 20
+                    text_x = self.console.screen_size // 2 - self.console.convertCoordinate(227, 0)[0]
                     text_y = self.console.screen_size // 2 
-                    create_3d_text(self.screen, loading_text, 24, text_x, text_y)
+                    create_3d_text(self.screen, loading_text, 50, text_x, text_y, self.console)
                     
                 self.button_manager.draw_all(self.screen)
                 self.display_manager.draw_all(self.screen)
-                create_3d_text(self.screen, "RUSH HOUR", 80, 180, self.console.screen_size - 96)
+                x, y = self.console.convertCoordinate(284, 150)
+                create_3d_text(self.screen, "RUSH HOUR", 140, self.console.screen_size // 2 - x, self.console.screen_size // 3 * 2 + y, self.console)
             else:
                 self.display_menu.draw_menu(self.screen)
-                create_3d_text(self.screen, "RUSH HOUR", 100, 125, self.console.screen_size // 3 - 120)
-           
+                x, y = self.console.convertCoordinate(284, 140)
+                create_3d_text(self.screen, "RUSH HOUR", 140, self.console.screen_size // 2 - x, self.console.screen_size // 3 - y, self.console)
+
             self.game_popup.draw(self.screen)
 
             pygame.display.flip()

@@ -15,10 +15,11 @@ class PopupLose(PopupBase):
         self.setup()
 
     def setup(self):
+        x, y = self.console.convertCoordinate(130, 50)
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + 40
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + y
         
-        spacing_x = 30
+        spacing_x = x
         
         reset_pos = (popup_center_x - self.reset.button_image.get_width() - spacing_x // 2, popup_center_y)
         exit_pos = (popup_center_x + spacing_x // 2, popup_center_y)
@@ -30,23 +31,26 @@ class PopupLose(PopupBase):
         self.exit.update_img()
 
     def draw(self, screen):
-        congrat_text = f"YOU LOST!"
+        congrat_text = f"YOU LOST !"
         info_text = f"YOU FAILED LEVEL {self.level}"
         algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
         
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        
-        title_x = popup_center_x - len(congrat_text) * 4 - 20
-        title_y = self.popup_pos[1] + 50
-        create_3d_text(screen, congrat_text, 20, title_x, title_y)
-        
-        info_x = popup_center_x - len(info_text) * 4 - 20
-        info_y = self.popup_pos[1] + 100
-        create_3d_text(screen, info_text, 16, info_x, info_y)
-        
-        algorithm_x = popup_center_x - len(algorithm_text) * 4
-        algorithm_y = self.popup_pos[1] + 130
-        create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
+
+        x, y = self.console.convertCoordinate(90, 20)
+        title_x = popup_center_x - x
+        title_y = self.popup_pos[1] + y
+        create_3d_text(screen, congrat_text, 40, title_x, title_y, self.console)
+
+        x, y = self.console.convertCoordinate(len(info_text) * 5 + 20, 80)
+        info_x = popup_center_x - x
+        info_y = self.popup_pos[1] + y
+        create_3d_text(screen, info_text, 30, info_x, info_y, self.console)
+
+        x, y = self.console.convertCoordinate(len(algorithm_text) * 5 + 30, 120)
+        algorithm_x = popup_center_x - x
+        algorithm_y = self.popup_pos[1] + y
+        create_3d_text(screen, algorithm_text, 30, algorithm_x, algorithm_y, self.console)
         
         self.reset.draw(screen)
         self.exit.draw(screen)

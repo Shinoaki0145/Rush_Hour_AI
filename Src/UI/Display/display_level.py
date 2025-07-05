@@ -8,12 +8,14 @@ class DisplayLevel(DisplayBase):
         self.display_image = self.console.reSize_Image(DISPLAY_PATH + "level_display.png")
 
     def setup_pos(self):
+        x, y = self.console.convertCoordinate(180, 220)
+        a, b = self.console.convertCoordinate(220, 225)
         self.display = {
-                "image": self.display_image, 
-                "pos": (205, 175),
-                "text_pos": (222, 179),
-                "text": "LEVEL :  0"
-            }
+            "image": self.display_image,
+            "pos": (self.console.screen_size // 2 - self.display_image.get_width() // 2 - x, y),
+            "text_pos": (self.console.screen_size // 2 - a, b),
+            "text": "LEVEL : 0"
+        }
 
     def draw(self, screen):
         screen.blit(self.display["image"], self.display["pos"])

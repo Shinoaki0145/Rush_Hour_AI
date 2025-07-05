@@ -26,14 +26,14 @@ class PopupInfoInGame(PopupBase):
 
         play_button_width = self.play_button.button_image.get_width()
 
-        spacing_x = 100
-        spacing_y = 20
-        spacing_line = 70
+        spacing_x, spacing_y = self.console.convertCoordinate(140, 40)
+        spacing_line = self.console.convertCoordinate(86, 0)[0]
 
+        x, y = self.console.convertCoordinate(215, 160)
         play_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y)
         pause_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + spacing_line)
         exit_pos = (popup_center_x - play_button_width - spacing_x, popup_center_y - play_button_width - spacing_y + 2 * spacing_line)
-        back_pos = (popup_center_x - play_button_width + 170, popup_center_y - play_button_width + 130)
+        back_pos = (popup_center_x - play_button_width + x, popup_center_y - play_button_width + y)
 
         self.play_button.button_pos = play_pos
         self.pause_button.button_pos = pause_pos
@@ -46,14 +46,20 @@ class PopupInfoInGame(PopupBase):
         self.back_button.update_img()
         
     def draw(self, screen):
-        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 135
-        title_y = self.popup_pos[1] + 15
-        create_3d_text(screen, "INFO BUTTON IN GAME", 24, title_x, title_y)
+        x, y = self.console.convertCoordinate(60, 20)
+        title_x = self.popup_pos[0] + x
+        title_y = self.popup_pos[1] + y
 
-        create_3d_text(screen, "Press play to choose Algorithm", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 80)
-        create_3d_text(screen, "Press pause to pause game and", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 140)
-        create_3d_text(screen, "press again to continue", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
-        create_3d_text(screen, "Press exit to out game", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 220)
+        create_3d_text(screen, "INFO BUTTON IN GAME", 40, title_x, title_y, self.console)
+
+        x, y = self.console.convertCoordinate(130, 90)
+        create_3d_text(screen, "Press play to choose Algorithm", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(130, 160)
+        create_3d_text(screen, "Press pause to pause game and", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(120, 190)
+        create_3d_text(screen, "press again to continue", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(130, 260)   
+        create_3d_text(screen, "Press exit to out game", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
 
         self.play_button.draw(screen)
         self.pause_button.draw(screen)

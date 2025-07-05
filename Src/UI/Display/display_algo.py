@@ -8,11 +8,12 @@ class DisplayAlgo(DisplayBase):
         self.display_image = self.console.reSize_Image(DISPLAY_PATH + "algo_display.png")
 
     def setup_pos(self):
+        x, y = self.console.convertCoordinate(70, 225)
         self.display = {
             "image": self.display_image,
-            "pos": (self.console.screen_size // 2 - 85, 175),
-            "text_pos": (self.console.screen_size // 2 - 55, 179),
-            "text": "ALGORITHM :  "
+            "pos": (self.console.screen_size // 2 - self.display_image.get_width() // 2, self.console.convertCoordinate(0, 220)[1]),
+            "text_pos": (self.console.screen_size // 2 - x, y),
+            "text": "ALGORITHM : "
         }
 
     def draw(self, screen):
