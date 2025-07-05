@@ -21,8 +21,7 @@ class PopupChooseLv(PopupBase):
         # (3 rows × 4 columns)
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
         popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
-        spacing_x = 15  
-        spacing_y = 15  
+        spacing_x, spacing_y = self.console.convertCoordinate(20, 20)
 
         # grid 3×4
         total_width = 4 * button_width + 3 * spacing_x
@@ -51,17 +50,20 @@ class PopupChooseLv(PopupBase):
     def draw(self, screen):
         win_text = "Select a level to start playing"
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        win_text_x = popup_center_x - len(win_text) * 4 - 17
-        win_text_y = self.popup_pos[1] + 20
-        create_3d_text(screen, win_text, 20, win_text_x, win_text_y)
-        
+        x, y = self.console.convertCoordinate(212, 20)
+        win_text_x = popup_center_x - x
+        win_text_y = self.popup_pos[1] + y
+        create_3d_text(screen, win_text, 40, win_text_x, win_text_y, self.console)
+        i = self.console.convertCoordinate(0, 20)[1]
+
         for _, button_data in self.buttons.items():
-            adjusted_pos = (button_data["pos"][0], button_data["pos"][1] + 20)
+            adjusted_pos = (button_data["pos"][0], button_data["pos"][1] + i)
             screen.blit(button_data["image"], adjusted_pos)
             level_text = button_data["text"]
-            text_x = adjusted_pos[0] + button_data["image"].get_width() // 2 - len(level_text) * 4
-            text_y = adjusted_pos[1] + button_data["image"].get_height() // 2 - 15
-            create_3d_text(screen, level_text, 20, text_x, text_y)
+            a, b = self.console.convertCoordinate(len(level_text) * 7, 25)
+            text_x = adjusted_pos[0] + button_data["image"].get_width() // 2 - a
+            text_y = adjusted_pos[1] + button_data["image"].get_height() // 2 - b
+            create_3d_text(screen, level_text, 40, text_x, text_y, self.console)
 
     def check_button_click(self, mouse_pos):
         if not self.visible:

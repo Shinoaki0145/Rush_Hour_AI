@@ -14,4 +14,4 @@ class DisplayBase:
         raise NotImplementedError("Must be implemented.")
     
     def draw_text_on_display(self, screen, text, pos):
-        create_3d_text(screen, text, 12, pos[0], pos[1])
+        create_3d_text(screen, text, 20, pos[0], pos[1], self.console)

@@ -9,7 +9,7 @@ class ButtonBack(ButtonBase):
         self.button_image = self.console.reSize_Smaller_Image(BUTTON_PATH + "but_back.png")
 
     def setup_pos(self):
-        self.button_pos = (110, 10)
+        self.button_pos = self.console.convertCoordinate(215, 160)
         
     def update_img(self):
         self.button = {

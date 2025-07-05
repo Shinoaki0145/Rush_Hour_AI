@@ -9,7 +9,7 @@ class ButtonInfo(ButtonBase):
         self.button_image = self.console.reSize_Image(BUTTON_PATH + "but_info.png")
 
     def setup_pos(self):
-        self.button_pos = (10, 10)
+        self.button_pos = self.console.convertCoordinate(10, 10)
 
     def update_img(self):
         self.button = {

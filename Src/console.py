@@ -5,8 +5,8 @@ class Console:
     def __init__(self):
         display_info = pygame.display.Info()
         screen_height = display_info.current_h
-        screen_height = screen_height - defs.HEADER_BAR
-
+        screen_height = int(screen_height - defs.HEADER_BAR * (screen_height / 1080))
+        
         self.screen_size = screen_height
         self.ratio_y = (screen_height) / defs.MAP_SIZE[1]
         self.ratio_x = (screen_height) / defs.MAP_SIZE[0]
