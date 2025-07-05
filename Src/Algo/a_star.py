@@ -1,4 +1,4 @@
-from queue import PriorityQueue
+import heapq
 from .state import *
 from itertools import count
 
@@ -12,19 +12,15 @@ def heuristic(car, m):
     return abs(car.coord[1] - 4) + num_block_cars
 
 def a_star(start):
-    frontier = PriorityQueue()
+    frontier = []
     unique = count()
     explored = set()
-    dist = {} # for faster frontier lookup
     state_count = 0
 
-    frontier.put((heuristic(start.cars[0], start.generate_map()), next(unique), start))
-    dist[start.to_tuple()] = 0
-    while not frontier.empty():
+    heapq.heappush(frontier, (heuristic(start.cars[0], start.generate_map()), next(unique), start))
+    while frontier:
         state_count += 1
-        _, _, current = frontier.get()
-        cur_tup = current.to_tuple()
-        dist.pop(cur_tup)
+        _, _, current = heapq.heappop(frontier)
 
         if current.cars[0].coord[1] + current.cars[0].length == 6:
             path = []
@@ -36,13 +32,12 @@ def a_star(start):
             print(f"Expanded nodes: {state_count}")
             return path
 
-        explored.add(cur_tup)
+        explored.add(current.to_tuple())
         for state in current.next_states():
             new_cost = heuristic(state.cars[0], state.generate_map()) + state.cost
             state_tuple = state.to_tuple()
-            # If child node not in explored and not in frontier
-            if state_tuple not in explored and state_tuple not in dist:
-                dist[state_tuple] = new_cost
-                frontier.put((new_cost, next(unique), state))
+            if (state_tuple not in explored and
+                not any(s.to_tuple() == state_tuple for _,_,s in frontier)):
+                heapq.heappush(frontier, (new_cost, next(unique), state))
 
     return None
