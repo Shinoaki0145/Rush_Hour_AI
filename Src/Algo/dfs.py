@@ -17,20 +17,19 @@ def dfs(start):
             continue
 
         state_count += 1
-        target_car = current_state.cars[0]
-        if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
-            path = []
-            while current_state != start:
-                path.append(current_state)
-                current_state = current_state.parent
-            path.append(start)
-            path.reverse()
-            print(f"Expanded nodes: {state_count}")
-            return path
-
         explored.add(state_tuple)
         for next_state in reversed(current_state.next_states()):
             if next_state.to_tuple() not in explored:
+                target_car = next_state.cars[0]
+                if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
+                    path = []
+                    while next_state != start:
+                        path.append(next_state)
+                        next_state = next_state.parent
+                    path.append(start)
+                    path.reverse()
+                    print(f"Expanded nodes: {state_count}")
+                    return path
                 dfs_stack.append(next_state)
 
     print(f"Expanded nodes: {state_count}")
