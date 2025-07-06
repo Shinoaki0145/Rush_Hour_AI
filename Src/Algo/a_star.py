@@ -25,7 +25,7 @@ def a_star(start):
         cur_tup = current_state.to_tuple()
         if cur_tup in dist and cost > dist[cur_tup]:
             continue
-        dist.pop(cur_tup)
+        dist.pop(cur_tup, None)
         state_count += 1
         
         target_car = current_state.cars[0]
