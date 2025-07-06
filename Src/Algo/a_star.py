@@ -51,4 +51,5 @@ def a_star(start):
                 dist[state_tuple] = new_cost
                 heapq.heappush(frontier, (new_cost, next(unique), next_state))
 
+    print(f"Expanded nodes: {state_count}")
     return None

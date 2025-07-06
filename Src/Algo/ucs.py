@@ -38,4 +38,5 @@ def ucs(start_state):
                 dist[state_tuple] = next_state.cost
                 heapq.heappush(frontier, (next_state.cost, next(unique), next_state))
 
+    print(f"Expanded nodes: {state_count}")
     return None

@@ -38,4 +38,5 @@ def bfs(start):
                 fast_frontier.add(state_tuple)
                 frontier.append(next_state)
 
+    print(f"Expanded nodes: {state_count}")
     return None
