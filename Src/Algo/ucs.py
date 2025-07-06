@@ -11,13 +11,12 @@ def ucs(start_state):
     heapq.heappush(frontier, (start_state.cost, next(unique), start_state))
     dist = {start_state.to_tuple() : start_state.cost}
     while frontier:
-        state_count += 1
         cost, _, current_state = heapq.heappop(frontier)
         cur_tup = current_state.to_tuple()
         if cur_tup in dist and cost > dist[cur_tup]:
             continue
         dist.pop(cur_tup)
-
+        state_count += 1
         
         target_car = current_state.cars[0]
         if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
