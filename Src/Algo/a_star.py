@@ -12,32 +12,43 @@ def heuristic(car, m):
     return abs(car.coord[1] - 4) + num_block_cars
 
 def a_star(start):
+    state_count = 0
     frontier = []
     unique = count()
     explored = set()
-    state_count = 0
 
-    heapq.heappush(frontier, (heuristic(start.cars[0], start.generate_map()), next(unique), start))
+    start_heuristic = heuristic(start.cars[0], start.generate_map())
+    heapq.heappush(frontier, (start_heuristic, next(unique), start))
+    dist = {start.to_tuple() : start_heuristic}
     while frontier:
         state_count += 1
-        _, _, current = heapq.heappop(frontier)
+        cost, _, current_state = heapq.heappop(frontier)
+        cur_tup = current_state.to_tuple()
+        if cur_tup in dist and cost > dist[cur_tup]:
+            continue
+        dist.pop(cur_tup)
 
-        if current.cars[0].coord[1] + current.cars[0].length == 6:
+        
+        target_car = current_state.cars[0]
+        if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
             path = []
-            while current != start:
-                path.append(current)
-                current = current.parent
+            while current_state != start:
+                path.append(current_state)
+                current_state = current_state.parent
             path.append(start)
             path.reverse()
             print(f"Expanded nodes: {state_count}")
             return path
 
-        explored.add(current.to_tuple())
-        for state in current.next_states():
-            new_cost = heuristic(state.cars[0], state.generate_map()) + state.cost
-            state_tuple = state.to_tuple()
-            if (state_tuple not in explored and
-                not any(s.to_tuple() == state_tuple for _,_,s in frontier)):
-                heapq.heappush(frontier, (new_cost, next(unique), state))
+        explored.add(cur_tup)
+        for next_state in current_state.next_states():
+            state_tuple = next_state.to_tuple()
+            if state_tuple in explored:
+                continue
+
+            new_cost = heuristic(next_state.cars[0], next_state.generate_map()) + next_state.cost
+            if state_tuple not in dist or new_cost < dist[state_tuple]:
+                dist[state_tuple] = new_cost
+                heapq.heappush(frontier, (new_cost, next(unique), next_state))
 
     return None

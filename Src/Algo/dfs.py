@@ -1,25 +1,30 @@
 from .state import *
 
-state_count = 0
 
-def dfs_recursive(state, explored):
-    global state_count
-    state_count += 1
+def dfs_recursive(state, explored, state_count):
+    state_count[0] += 1
+    
+    target_car = state.cars[0]
+    if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
+        return state
+    
     explored.add(state.to_tuple())
     for next_state in state.next_states():
         if next_state.to_tuple() not in explored:
-            # Kiểm tra goal: xe 0 đi ngang, ra tới cột 5
-            if next_state.cars[0].coord[1] + next_state.cars[0].length == 6:
-                return next_state
-            result = dfs_recursive(next_state, explored)
+            result = dfs_recursive(next_state, explored, state_count)
             if result:
                 return result
-    explored.remove(state.to_tuple())
     return None
 
 def dfs(start):
-    result = dfs_recursive(start, set())
-    print(f"Expanded nodes: {state_count}")
+    state_count = [0]
+    target_car = start.cars[0]
+    if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
+        print(f"Expanded nodes: {state_count[0]}")
+        return [start]
+
+    result = dfs_recursive(start, set(), state_count)
+    print(f"Expanded nodes: {state_count[0]}")
 
     path = []
     if result:
