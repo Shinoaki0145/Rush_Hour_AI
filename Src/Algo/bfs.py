@@ -3,7 +3,8 @@ from .state import *
 
 def bfs(start):
     state_count = 0
-    if start.cars[0].coord[1] + start.cars[0].length == 6:
+    target_car = start.cars[0]
+    if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
         print(f"Expanded nodes: {state_count}")
         return [start]
     
