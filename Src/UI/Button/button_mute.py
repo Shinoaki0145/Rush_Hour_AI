@@ -9,7 +9,7 @@ class ButtonMute(ButtonBase):
         self.button_image = self.console.reSize_Image(BUTTON_PATH + "but_mute.png")
 
     def setup_pos(self):
-        self.button_pos = (110, 10)
+        self.button_pos = self.console.convertCoordinate(130, 10)
         
     def update_img(self):
         self.button = {

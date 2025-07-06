@@ -14,22 +14,28 @@ class PopupInfoMenu(PopupBase):
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
         popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
 
+        x, y = self.console.convertCoordinate(215, 160)
         back_button_width = self.back_button.button_image.get_width()
-        back_pos = (popup_center_x - back_button_width + 170, popup_center_y - back_button_width + 130)
+        back_pos = (popup_center_x - back_button_width + x, popup_center_y - back_button_width + y)
 
         self.back_button.button_pos = back_pos
         self.back_button.update_img()
         
     def draw(self, screen):
-        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 110
-        title_y = self.popup_pos[1] + 15
-        create_3d_text(screen, "RUSH HOUR", 40, title_x, title_y)
+        x, y = self.console.convertCoordinate(120, 20)
+        create_3d_text(screen, "RUSH HOUR", 60, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
 
-        create_3d_text(screen, "GROUP 4", 25, title_x + 60, title_y + 50)
-        create_3d_text(screen, "Tran Hoai Thien Nhan", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 120)
-        create_3d_text(screen, "Tran Tri Nhan", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 160)
-        create_3d_text(screen, "Nguyen An Nghiep", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 200)
-        create_3d_text(screen, "Cao Tran Ba Dat", 16, self.popup_pos[0] + self.popup_bg.get_width() // 2 - 90, self.popup_pos[1] + 240)
+        x, y = self.console.convertCoordinate(70, 80)
+        create_3d_text(screen, "GROUP 4", 40, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        
+        x, y = self.console.convertCoordinate(100, 140)
+        create_3d_text(screen, "Tran Hoai Thien Nhan", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(100, 180)
+        create_3d_text(screen, "Tran Tri Nhan", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(100, 220)
+        create_3d_text(screen, "Nguyen An Nghiep", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
+        x, y = self.console.convertCoordinate(100, 260)
+        create_3d_text(screen, "Cao Tran Ba Dat", 30, self.popup_pos[0] + self.popup_bg.get_width() // 2 - x, self.popup_pos[1] + y, self.console)
 
         self.back_button.draw(screen)
 

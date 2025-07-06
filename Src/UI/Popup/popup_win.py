@@ -22,10 +22,11 @@ class PopupWin(PopupBase):
         self.setup()
 
     def setup(self):
+        x, y = self.console.convertCoordinate(130, 50)
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + 40
-        
-        spacing_x = 30
+        popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2 + y
+
+        spacing_x = x
         
         reset_pos = (popup_center_x - self.reset.button_image.get_width() - spacing_x // 2, popup_center_y)
         next_pos = (popup_center_x + spacing_x // 2, popup_center_y)
@@ -37,29 +38,33 @@ class PopupWin(PopupBase):
         self.next_level.update_img()
         
     def draw(self, screen):
-        congrat_text = f"CONGRATULATIONS!"
+        congrat_text = f"CONGRATULATIONS !"
         info_text_1 = f"YOU WIN LEVEL {self.level}"
         info_text_2 = f"WITH {self.moves} MOVES AND COST {self.cost} UNITS"
         algorithm_text = f"BY USING ALGORITHM: {self.algorithm}"
         
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
-        
-        title_x = popup_center_x - len(congrat_text) * 4 - 40
-        title_y = self.popup_pos[1] + 30
-        create_3d_text(screen, congrat_text, 20, title_x, title_y)
-        
-        info_x = popup_center_x - len(info_text_1) * 4 - 20
-        info_y = self.popup_pos[1] + 80
-        create_3d_text(screen, info_text_1, 16, info_x, info_y)
-        
-        info_x_2 = popup_center_x - len(info_text_2) * 4 - 20
-        info_y_2 = self.popup_pos[1] + 100
-        create_3d_text(screen, info_text_2, 16, info_x_2, info_y_2)
 
-        algorithm_x = popup_center_x - len(algorithm_text) * 4
-        algorithm_y = self.popup_pos[1] + 120
-        create_3d_text(screen, algorithm_text, 16, algorithm_x, algorithm_y)
-        
+        x, y = self.console.convertCoordinate(160, 20)
+        title_x = popup_center_x - x
+        title_y = self.popup_pos[1] + y
+        create_3d_text(screen, congrat_text, 40, title_x, title_y, self.console)
+
+        x, y = self.console.convertCoordinate(len(info_text_1) * 5 + 30, 80)
+        info_x = popup_center_x - x
+        info_y = self.popup_pos[1] + y
+        create_3d_text(screen, info_text_1, 30, info_x, info_y, self.console)
+
+        x, y = self.console.convertCoordinate(len(info_text_2) * 5 + 42, 120)
+        info_x_2 = popup_center_x - x
+        info_y_2 = self.popup_pos[1] + y
+        create_3d_text(screen, info_text_2, 30, info_x_2, info_y_2, self.console)
+
+        x, y = self.console.convertCoordinate(len(algorithm_text) * 5 + 30, 160)
+        algorithm_x = popup_center_x - x
+        algorithm_y = self.popup_pos[1] + y
+        create_3d_text(screen, algorithm_text, 30, algorithm_x, algorithm_y, self.console)
+
         self.reset.draw(screen)
         self.next_level.draw(screen)
     

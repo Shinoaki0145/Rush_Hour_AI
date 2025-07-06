@@ -1,10 +1,11 @@
 import pygame
 from defs import *
+from math import sqrt
 
-def create_3d_text(screen, text, size, x, y):
+def create_3d_text(screen, text, size, x, y, console=None):
     """Tạo hiệu ứng chữ 3D với viền"""
-    
-    font = pygame.font.Font(FONT, size)
+
+    font = pygame.font.Font(FONT, int(size * sqrt(console.ratio_x ** 2 + console.ratio_y ** 2)))
     
     # Vẽ outline (viền)
     outline_offsets = [
@@ -17,6 +18,7 @@ def create_3d_text(screen, text, size, x, y):
     
     for dx, dy in outline_offsets:
         outline_surface = font.render(text, True, BLUE_LIGHT)
+        dx, dy = console.convertCoordinate(dx, dy)
         screen.blit(outline_surface, (x + dx, y + dy))
     
     # Vẽ chữ chính

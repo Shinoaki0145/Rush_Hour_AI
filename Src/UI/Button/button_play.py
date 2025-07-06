@@ -9,8 +9,9 @@ class ButtonPlay(ButtonBase):
         self.button_image = self.console.reSize_Image(BUTTON_PATH + "but_play.png")
 
     def setup_pos(self):
-        self.button_pos = (self.console.screen_size - self.button_image.get_width() - 110, 10)
-    
+        x, y = self.console.convertCoordinate(130, 10)
+        self.button_pos = (self.console.screen_size - self.button_image.get_width() - x, y)
+
     def update_img(self):
         self.button = {
             "image": self.button_image,

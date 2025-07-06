@@ -21,14 +21,13 @@ class PopupAlgo(PopupBase):
         popup_center_x = self.popup_pos[0] + self.popup_bg.get_width() // 2
         popup_center_y = self.popup_pos[1] + self.popup_bg.get_height() // 2
         
-        spacing_x = 20
-        spacing_y = 20
+        spacing_x, spacing_y = self.console.convertCoordinate(20, 20)
         
         positions = [
-            (popup_center_x - button_width - spacing_x//2, popup_center_y - button_height - spacing_y//2),  # BFS
-            (popup_center_x + spacing_x//2, popup_center_y - button_height - spacing_y//2),  # DFS
-            (popup_center_x - button_width - spacing_x//2, popup_center_y + spacing_y//2),  # A STAR
-            (popup_center_x + spacing_x//2, popup_center_y + spacing_y//2)   # UCS
+            (popup_center_x - button_width - spacing_x // 2, popup_center_y - button_height - spacing_y // 2),  # BFS
+            (popup_center_x + spacing_x // 2, popup_center_y - button_height - spacing_y // 2),  # DFS
+            (popup_center_x - button_width - spacing_x // 2, popup_center_y + spacing_y // 2),  # A STAR
+            (popup_center_x + spacing_x // 2, popup_center_y + spacing_y // 2)   # UCS
         ]
         
         for i, algorithm in enumerate(algorithms):
@@ -40,16 +39,18 @@ class PopupAlgo(PopupBase):
             }
             
     def draw(self, screen):
-        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - 120
-        title_y = self.popup_pos[1] + 50
-        create_3d_text(screen, "CHOOSE ALGORITHM", 24, title_x, title_y)
+        x, y = self.console.convertCoordinate(153, 20)
+        title_x = self.popup_pos[0] + self.popup_bg.get_width() // 2 - x
+        title_y = self.popup_pos[1] + y
+        create_3d_text(screen, "CHOOSE ALGORITHM", 40, title_x, title_y, self.console)
         
         for algorithm, button_data in self.buttons.items():
             screen.blit(button_data["image"], button_data["pos"])
             
-            text_x = button_data["pos"][0] + button_data["image"].get_width() // 2 - len(algorithm) * 6
-            text_y = button_data["pos"][1] + button_data["image"].get_height() // 2 - 10
-            create_3d_text(screen, algorithm, 16, text_x, text_y)
+            a, b = self.console.convertCoordinate(len(algorithm) * 9, 17)
+            text_x = button_data["pos"][0] + button_data["image"].get_width() // 2 - a
+            text_y = button_data["pos"][1] + button_data["image"].get_height() // 2 - b
+            create_3d_text(screen, algorithm, 40, text_x, text_y, self.console)
 
     def check_button_click(self, mouse_pos):
         if not self.visible:
