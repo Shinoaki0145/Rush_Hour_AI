@@ -1,4 +1,6 @@
 0,2
-truck,4,0,0,down
-car,3,3,0,down
-car,4,4,1,right
+car,0,0,0,down
+car,4,3,1,right
+car,2,4,0,down
+truck,5,0,0,down
+truck,3,5,1,right
