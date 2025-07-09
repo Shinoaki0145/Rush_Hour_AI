@@ -304,6 +304,9 @@ class Game:
                                     self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
                                     self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
 
+                                    resetting = True
+                                    reset_timer = current_time
+                                    
                                 elif clicked_button == "play":
                                     if not lv_started:
                                         self.game_utils.handle_button_action(clicked_button, self.car_manager, self.game_popup)
