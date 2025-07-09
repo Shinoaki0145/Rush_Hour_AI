@@ -26,8 +26,7 @@ def ucs(start_state):
                 current_state = current_state.parent
             path.append(start_state)
             path.reverse()
-            print(f"Expanded nodes: {state_count}")
-            return path
+            return path, state_count
 
         explored.add(cur_tup)
         for next_state in current_state.next_states():
@@ -37,5 +36,4 @@ def ucs(start_state):
                 dist[state_tuple] = next_state.cost
                 heapq.heappush(frontier, (next_state.cost, next(unique), next_state))
 
-    print(f"Expanded nodes: {state_count}")
-    return None
+    return None, state_count

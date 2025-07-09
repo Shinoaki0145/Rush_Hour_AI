@@ -10,6 +10,8 @@ class GameUtils:
         self.game_completed = False
         self.audio_muted = False
         self.game_pause = False
+        self.failed_algorithms = set()
+        self.last_failed_level = 0
 
         pygame.mixer.init()
         self.bg_music_path = AUDIO_PATH + "bg_music.wav"
@@ -58,6 +60,7 @@ class GameUtils:
             self.selected_algorithm = None
             return True
         elif action == "reset":
+            self.selected_algorithm = None
             return False
     
     def handle_lose_popup_action(self, action, game_popup):
@@ -65,6 +68,17 @@ class GameUtils:
         self.game_completed = False
         
         if action == "reset":
+            self.selected_algorithm = None
+            return True
+        elif action == "exit":
+            self.exit_game()
+        return False
+    
+    def handle_final_lose_popup_action(self, action, game_popup):
+        game_popup.hide()
+        self.game_completed = False
+        if action == "next_level":
+            self.current_level += 1
             self.selected_algorithm = None
             return True
         elif action == "exit":
@@ -167,3 +181,11 @@ class GameUtils:
         if self.current_level == 12 and self.check_win_condition(car_manager):
             return True
         return False
+    
+    def check_final_lose_condition(self, algorithm, level):
+        if self.last_failed_level != level:
+            self.failed_algorithms = set()
+            self.last_failed_level = level
+
+        self.failed_algorithms.add(algorithm)
+        return len(self.failed_algorithms)

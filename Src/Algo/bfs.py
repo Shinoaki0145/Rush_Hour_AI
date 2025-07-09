@@ -5,8 +5,7 @@ def bfs(start):
     state_count = 0
     target_car = start.cars[0]
     if not target_car.vertical and target_car.coord[1] + target_car.length == 6:
-        print(f"Expanded nodes: {state_count}")
-        return [start]
+        return [start], state_count
     
     frontier = deque()
     explored = set()
@@ -33,11 +32,9 @@ def bfs(start):
                         next_state = next_state.parent
                     path.append(start)
                     path.reverse()
-                    print(f"Expanded nodes: {state_count}")
-                    return path
+                    return path, state_count
                  
                 fast_frontier.add(state_tuple)
                 frontier.append(next_state)
 
-    print(f"Expanded nodes: {state_count}")
-    return None
+    return None, state_count

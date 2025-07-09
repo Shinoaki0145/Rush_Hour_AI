@@ -1,10 +1,11 @@
 import UI.Popup.popup_algo as pa
 import UI.Popup.popup_win as pw
-import UI.Popup.popup_lose  as pl
+import UI.Popup.popup_lose as pl
 import UI.Popup.popup_final_win as pfw
 import UI.Popup.popup_choose_lv as pcl
 import UI.Popup.popup_info_menu as pim
 import UI.Popup.popup_info_ingame as piig
+import UI.Popup.popup_final_lose as pfl
 from UI.ui import *
 
 class GamePopup:
@@ -16,9 +17,10 @@ class GamePopup:
         self.choose_lv = pcl.PopupChooseLv(console)
         self.info_menu = pim.PopupInfoMenu(console)
         self.info_ingame = piig.PopupInfoInGame(console)
+        self.final_lose = pfl.PopupFinalLose(console)
 
-        self.popup_names = ['algo', 'win', 'lose', 'final_win', 'choose_lv', 'info_menu', 'info_ingame']
-        
+        self.popup_names = ['algo', 'win', 'lose', 'final_win', 'choose_lv', 'info_menu', 'info_ingame', 'final_lose']
+
         self.console = console
         self.visible = False
         self.popup_type = None
@@ -49,6 +51,8 @@ class GamePopup:
             self.lose.draw(screen)
         elif self.popup_type == "final_win":
             self.final_win.draw(screen)
+        elif self.popup_type == "final_lose":
+            self.final_lose.draw(screen)
         elif self.popup_type == "choose_level":
             self.choose_lv.draw(screen)
         elif self.popup_type == "info_menu":

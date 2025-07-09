@@ -89,9 +89,17 @@ class Game:
         if result_path is None or len(result_path) == 0:
             print(f"No solution found with {algorithm_name}")
             current_algorithm = self.game_utils.get_selected_algorithm()
-            self.game_utils.play_fail_music()
-            self.game_popup.lose.show(self.game_utils.get_current_level(), current_algorithm)
-            self.game_popup.update_type("lose")
+            current_level = self.game_utils.get_current_level()
+            fail_count = self.game_utils.check_final_lose_condition(current_algorithm, current_level)
+
+            if fail_count == 4:
+                self.game_utils.play_win_music()
+                self.game_popup.final_lose.show(current_level)
+                self.game_popup.update_type("final_lose")
+            else:
+                self.game_utils.play_fail_music()
+                self.game_popup.lose.show(current_level, current_algorithm)
+                self.game_popup.update_type("lose")
         else:
             print(f"Found path with {len(result_path)} states using {algorithm_name}")
             self.path = result_path
@@ -115,22 +123,26 @@ class Game:
                 begin = time()
                 
                 if selected_algo == "BFS":
-                    self.path = bfs(start)
+                    self.path, expanded_nodes = bfs(start)
                 elif selected_algo == "DFS":
-                    self.path = dfs(start)
+                    self.path, expanded_nodes = dfs(start)
                 elif selected_algo == "A STAR":
-                    self.path = a_star(start)
+                    self.path, expanded_nodes = a_star(start)
                 elif selected_algo == "UCS":
-                    self.path = ucs(start)
+                    self.path, expanded_nodes = ucs(start)
                 else:
-                    self.path = a_star(start)
-                
+                    self.path, expanded_nodes = a_star(start)
+
                 time_taken = round(time() - begin, 4)
                 memory_used = round(tracemalloc.get_traced_memory()[1] / (1024 ** 2), 2)
                 tracemalloc.stop()
-                
+
+                print(f"Expanded nodes: {expanded_nodes}")
+                self.display_manager.expanded_nodes.update_text(f"EXPANDED NODES : {expanded_nodes}")
                 print(f"Time taken: {time_taken} seconds.")
+                self.display_manager.time_taken.update_text(f"TIME TAKEN : {time_taken} s")
                 print(f"Memory peaked: {memory_used} MB.")
+                self.display_manager.memory_peaked.update_text(f"MEMORY PEAKED : {memory_used} MB")
                 
                 callback(self.path, selected_algo)
                 
@@ -175,12 +187,14 @@ class Game:
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
                                     self.display_manager.algo.update_text("ALGORITHM :  ")
+                                    self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                    self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                    self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
                                    
                                     if next_lv:
                                         self.map_name = "map" + str(self.game_utils.get_current_level())
                                     self.car_manager = load_map(self.console, self.map_name)
                                     lv_started = False
-                                    self.display_manager.algo.update_text("ALGORITHM :  ")
                                     self.init_common_game_var()
 
                                 elif self.game_popup.popup_type == "lose":    
@@ -189,11 +203,29 @@ class Game:
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
                                     self.display_manager.algo.update_text("ALGORITHM :  ")
+                                    self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                    self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                    self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
                                     
                                     if reset_level:
                                         self.car_manager = load_map(self.console, self.map_name)
                                     lv_started = False
-
+                                    self.init_common_game_var()
+                                    
+                                elif self.game_popup.popup_type == "final_lose":
+                                    next_lv = self.game_utils.handle_final_lose_popup_action(clicked_popup_button, self.game_popup)
+                                    self.display_manager.level.update_text(f"LEVEL :  {self.game_utils.get_current_level()}")
+                                    self.display_manager.moves.update_text("MOVES :  0")
+                                    self.display_manager.costs.update_text("COSTS :  0")
+                                    self.display_manager.algo.update_text("ALGORITHM :  ")
+                                    self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                    self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                    self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
+                                   
+                                    if next_lv:
+                                        self.map_name = "map" + str(self.game_utils.get_current_level())
+                                    self.car_manager = load_map(self.console, self.map_name)
+                                    lv_started = False
                                     self.init_common_game_var()
                                     
                                 elif self.game_popup.popup_type == "final_win":
@@ -216,6 +248,9 @@ class Game:
                                         self.display_manager.moves.update_text("MOVES :  0")
                                         self.display_manager.costs.update_text("COSTS :  0")
                                         self.display_manager.algo.update_text("ALGORITHM :  ")
+                                        self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                        self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                        self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
                                     else:
                                         self.car_manager = result
 
@@ -233,6 +268,9 @@ class Game:
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
                                     self.display_manager.algo.update_text("ALGORITHM :  ")
+                                    self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                    self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                    self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
                                     
                                     self.init_common_game_var()
                                     
@@ -262,9 +300,9 @@ class Game:
                                     
                                     self.display_manager.moves.update_text("MOVES :  0")
                                     self.display_manager.costs.update_text("COSTS :  0")
-                                    
-                                    resetting = True
-                                    reset_timer = current_time
+                                    self.display_manager.time_taken.update_text("TIME TAKEN : 0 s")
+                                    self.display_manager.memory_peaked.update_text("MEMORY PEAKED : 0 MB")
+                                    self.display_manager.expanded_nodes.update_text("EXPANDED NODES : 0")
 
                                 elif clicked_button == "play":
                                     if not lv_started:

@@ -36,8 +36,7 @@ def a_star(start):
                 current_state = current_state.parent
             path.append(start)
             path.reverse()
-            print(f"Expanded nodes: {state_count}")
-            return path
+            return path, state_count
 
         explored.add(cur_tup)
         for next_state in current_state.next_states():
@@ -50,5 +49,4 @@ def a_star(start):
                 dist[state_tuple] = new_cost
                 heapq.heappush(frontier, (new_cost, next(unique), next_state))
 
-    print(f"Expanded nodes: {state_count}")
-    return None
+    return None, state_count
